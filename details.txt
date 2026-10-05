@@ -1,0 +1,180 @@
+================================================================================
+PROJECT
+================================================================================
+Detecting the Onset of Reward Hacking from RL Policy Behavior
+
+A controlled RL experiment designed to study reward hacking — where an agent
+learns to maximise its training signal in a way that undermines the true
+objective. We record training-dynamics signals over time and plan to combine
+data from multiple environments to investigate whether these signals generalise.
+
+================================================================================
+RESEARCH IDEA
+================================================================================
+Train RL agents using a flawed proxy reward. Record how the agent's behavior
+changes during training (reward, episode length, entropy, state visitation,
+action distribution). Eventually, combine data from several environments and
+build a detector that can identify when reward hacking has started.
+
+This prototype is Step 1: build and validate the measurement framework.
+
+================================================================================
+CURRENT ENVIRONMENT — GridWorld
+================================================================================
+A 5x5 deterministic grid.
+
+Layout:
+    . . . . .
+    . . . . .
+    S . C . .
+    . . . . .
+    . . . . G
+
+    S = Start position (row 2, col 0)
+    G = True goal (row 4, col 4)
+    C = Coin / proxy reward source (row 2, col 2)
+
+================================================================================
+REWARD DESIGN (GridWorld)
+================================================================================
+    Coin reward  : +1.0  each time the agent visits the coin
+    Goal reward  : +5.0  when the agent reaches the true goal (episode ends)
+    Step penalty : -0.01 per step
+
+Why this causes reward hacking:
+    - The agent could walk straight to G (+5, episode ends quickly, few penalties)
+    - BUT the coin respawns every 5 steps, so the agent can repeatedly collect +1
+    - After ~8-10 coin collects, the agent has already earned more than +5
+    - PPO discovers this and learns to farm the coin instead of reaching the goal
+    - Result: the agent NEVER reaches G even though G has a higher per-step value
+
+================================================================================
+CURRENT IMPLEMENTATION
+================================================================================
+Files in this repository:
+
+    config.py        -- Shared settings: seed, checkpoint schedule, PPO params,
+                        output paths. DO NOT hard-code paths elsewhere.
+
+    environment.py   -- GridWorld environment (Gymnasium API).
+                        ALL GridWorld-specific logic lives here.
+                        ENV_NAME = "gridworld" is declared here.
+
+    train.py         -- Generic PPO training loop. Saves checkpoints at
+                        regular intervals. Works for any Gymnasium environment.
+
+    evaluate.py      -- Generic evaluation loop. Loads each checkpoint, runs
+                        episodes, and writes results/<env>_metrics.csv.
+
+    metrics.py       -- Common metrics schema and helper functions.
+                        Defines COMMON_SCHEMA that all environments must follow.
+                        compute_entropy(), compute_avg_entropy(), build_metric_row()
+
+    analyze.py       -- Generates all plots and the animated GIF.
+                        Some plots are GridWorld-specific (state visitation heatmap,
+                        trajectory GIF) but the training-dynamics plots are generic.
+
+    run_all.py       -- One-shot runner: python run_all.py
+
+Output:
+    checkpoints/gridworld/0.zip … 50000.zip
+    results/gridworld_metrics.csv
+    results/gridworld_plots/   (PNG plots + animated GIF)
+
+================================================================================
+COMMON DATA FORMAT
+================================================================================
+Every environment must produce a CSV with these columns:
+
+    environment          -- string identifier, e.g. "gridworld"
+    training_step        -- PPO step at which the checkpoint was saved
+    episode              -- episode index within the evaluation run
+    proxy_reward         -- sum of training rewards in the episode
+    episode_length       -- number of steps in the episode
+    goal_reached         -- 1 if the true goal was reached, else 0
+    entropy              -- average policy entropy H = -sum(p*log(p))
+    state_visitation     -- JSON dict mapping state key → visit count
+    action_distribution  -- JSON list of action probabilities
+
+Optional environment-specific data goes in:
+    extra_metrics        -- JSON dict (e.g. {"coin_visits": 7} for GridWorld)
+
+This common format allows datasets from multiple environments to be concatenated
+and analysed together.
+
+================================================================================
+TEAMMATE TASK
+================================================================================
+You need to create a SECOND, DIFFERENT RL environment that also demonstrates
+reward hacking through a different mechanism.
+
+Requirements:
+    1. Choose a different environment (NOT another GridWorld).
+       Examples: a continuous control task, a resource-gathering task,
+       a navigation environment with a different exploit, etc.
+
+    2. Define a clear TRUE OBJECTIVE that the agent should achieve.
+
+    3. Design a FLAWED PROXY REWARD that is tempting but misaligned with
+       the true objective. Make it exploitable (repeatable / farmable).
+
+    4. Train PPO on the PROXY REWARD only.
+
+    5. Save checkpoints at the same steps as GridWorld:
+       [0, 5000, 10000, 20000, 30000, 40000, 50000]
+
+    6. Collect the same common metrics (see COMMON DATA FORMAT above).
+
+    7. Use a unique environment name, e.g. ENV_NAME = "cartpole_hack"
+
+    8. Write results to results/<your_env_name>_metrics.csv
+
+    9. Make sure goal_reached = 1 is possible but the agent learns NOT to do it.
+
+================================================================================
+HOW TO ADD ANOTHER ENVIRONMENT
+================================================================================
+Step 1: Create your environment file, e.g. environment2.py
+        Set ENV_NAME = "your_env_name" at the top.
+        Implement a standard Gymnasium class with reset() and step().
+        Optionally add get_all_states() for entropy sampling.
+
+Step 2: In train.py, swap the import:
+        from environment import GridWorldEnv, ENV_NAME
+        → from environment2 import YourEnv as GridWorldEnv, ENV_NAME
+
+Step 3: Run train.py → evaluate.py → analyze.py
+        Your results will go to results/your_env_name_metrics.csv
+
+Step 4: Combine datasets:
+        import pandas as pd
+        df1 = pd.read_csv("results/gridworld_metrics.csv")
+        df2 = pd.read_csv("results/your_env_name_metrics.csv")
+        combined = pd.concat([df1, df2], ignore_index=True)
+        combined.to_csv("results/combined_metrics.csv", index=False)
+
+        The "environment" column tells them apart.
+
+================================================================================
+WHAT NOT TO CHANGE
+================================================================================
+DO NOT modify these files unless there is a strong reason:
+    - metrics.py       (common schema — changes break both environments)
+    - config.py        (shared settings — keep checkpoint steps the same)
+    - analyze.py       (shared plotting — generic parts should stay generic)
+    - evaluate.py      (shared evaluation loop)
+
+DO create:
+    - environment2.py  (your new environment)
+    - Any helper files specific to your environment
+
+================================================================================
+NEXT STEP
+================================================================================
+1. Your teammate creates environment2.py with a different reward-hacking setup.
+2. Both environments run the same training/evaluation pipeline.
+3. Both CSVs are combined into results/combined_metrics.csv.
+4. Analysis looks at whether training-dynamics signals (entropy drop, reward
+   plateau, goal_reached → 0%) appear in both environments over time.
+5. That cross-environment pattern is the foundation of the detector.
+================================================================================
