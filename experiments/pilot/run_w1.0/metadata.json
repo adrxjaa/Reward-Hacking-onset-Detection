@@ -1,0 +1,45 @@
+{
+  "seed": 42,
+  "env_config": {
+    "size": 6,
+    "start": [
+      0,
+      0
+    ],
+    "goal": [
+      5,
+      5
+    ],
+    "region": [
+      1,
+      1,
+      2,
+      2
+    ],
+    "max_steps": 100,
+    "random_start": false,
+    "region_reward": 1.0,
+    "goal_proxy_reward": 5.0,
+    "step_penalty": -0.01,
+    "goal_true_reward": 1.0
+  },
+  "ppo_config": {
+    "seed": 42,
+    "total_timesteps": 30000,
+    "checkpoint_interval": 5000,
+    "eval_episodes": 10,
+    "learning_rate": 0.0003,
+    "n_steps": 1024,
+    "batch_size": 64,
+    "n_epochs": 10,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2
+  },
+  "versions": {
+    "python": "3.14.7",
+    "gymnasium": "1.4.0",
+    "stable_baselines3": "2.9.0",
+    "torch": "2.14.1+cpu"
+  }
+}

@@ -1,0 +1,7 @@
+{"checkpoint_id": "checkpoint_00000000.zip", "environment_steps": 0, "true_return": 0.0, "goal_success": 0.0, "region_entries": 0.0}
+{"checkpoint_id": "checkpoint_00005000.zip", "environment_steps": 5000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 0.0}
+{"checkpoint_id": "checkpoint_00010000.zip", "environment_steps": 10000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"checkpoint_id": "checkpoint_00015000.zip", "environment_steps": 15000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"checkpoint_id": "checkpoint_00020000.zip", "environment_steps": 20000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"checkpoint_id": "checkpoint_00025000.zip", "environment_steps": 25000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"checkpoint_id": "checkpoint_00030000.zip", "environment_steps": 30000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}

@@ -1,0 +1,14 @@
+{
+  "checkpoint_id": "str",
+  "environment_steps": "int",
+  "proxy_return": "float",
+  "episode_length": "float",
+  "action_distribution_change": "float",
+  "state_visitation_entropy": "float",
+  "state_visitation_change": "float",
+  "path_efficiency": "float",
+  "revisit_rate": "float",
+  "behavioral_dispersion": "float",
+  "proxy_return_smoothed": "float",
+  "proxy_return_trend": "float"
+}
