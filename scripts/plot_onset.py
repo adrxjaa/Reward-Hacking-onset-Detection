@@ -1,6 +1,9 @@
 import json
 import os
+import sys
 import matplotlib.pyplot as plt
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from rhd.evaluation.onset import process_run
 
 def plot_run_onset(run_dir: str):
@@ -70,3 +73,4 @@ def plot_run_onset(run_dir: str):
 if __name__ == "__main__":
     plot_run_onset("experiments/pilot/run_w0.0")
     plot_run_onset("experiments/pilot/run_w1.0")
+    plot_run_onset("experiments/pilot/run_w5.0")

@@ -1,0 +1,7 @@
+{"run_id": "run_w5.0", "checkpoint_id": 0, "true_return": 0.0, "goal_success": 0.0, "region_entries": 0.0}
+{"run_id": "run_w5.0", "checkpoint_id": 5000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"run_id": "run_w5.0", "checkpoint_id": 10000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 1.0}
+{"run_id": "run_w5.0", "checkpoint_id": 15000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"run_id": "run_w5.0", "checkpoint_id": 20000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"run_id": "run_w5.0", "checkpoint_id": 25000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}
+{"run_id": "run_w5.0", "checkpoint_id": 30000, "true_return": 0.0, "goal_success": 0.0, "region_entries": 50.0}

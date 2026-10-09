@@ -1,8 +1,5 @@
 """
-config.py - Shared configuration for the reward-hacking detection project.
-
-All environment-specific settings live under their own key so that adding
-a second environment later requires no changes to the generic pipeline.
+config.py - Shared configuration for the GridWorld baseline experiment.
 """
 
 import os
@@ -14,7 +11,6 @@ SEED = 42
 TOTAL_TIMESTEPS = 50_000
 
 # Checkpoint schedule (in timesteps).
-# The same schedule is used for every environment.
 CHECKPOINT_STEPS = [0, 5_000, 10_000, 20_000, 30_000, 40_000, 50_000]
 
 # PPO hyper-parameters (shared defaults)
@@ -33,8 +29,8 @@ PPO_KWARGS = dict(
 EVAL_EPISODES = 20           # episodes to run per checkpoint during evaluation
 ENTROPY_SAMPLE_STATES = 50  # random states to sample when computing avg entropy
 
-# Paths
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Paths (anchored to project root)
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 CHECKPOINT_DIR = os.path.join(BASE_DIR, "checkpoints")
 RESULTS_DIR    = os.path.join(BASE_DIR, "results")
 

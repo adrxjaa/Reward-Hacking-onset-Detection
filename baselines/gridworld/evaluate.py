@@ -1,29 +1,19 @@
 """
-evaluate.py - Generic evaluation pipeline.
+evaluate.py - Evaluation pipeline for GridWorld baseline.
 
 Loads each checkpoint, runs EVAL_EPISODES episodes, and records the common
-metrics defined in metrics.py. Saves one CSV per environment.
-
-Usage:
-    python evaluate.py
-
-Output:
-    results/gridworld_metrics.csv
-
-The CSV columns follow COMMON_SCHEMA so that a second environment's CSV
-can be concatenated directly for cross-environment analysis.
+metrics defined in metrics.py. Saves results to results/metrics.csv.
 """
 
 import os
 import json
+import csv
 import torch
 from stable_baselines3 import PPO
 import numpy as np
-import pandas as pd
 
 import config
 import metrics as M
-# change the file name with your respective file
 from environment import GridWorldEnv, ENV_NAME
 
 
@@ -38,7 +28,6 @@ def evaluate():
 
     for step in config.CHECKPOINT_STEPS:
         ckpt = config.checkpoint_path(ENV_NAME, step)
-        # SB3 appends .zip automatically; check both
         ckpt_file = ckpt if os.path.exists(ckpt) else ckpt + ".zip"
         if not os.path.exists(ckpt_file):
             print(f"  [SKIP] checkpoint not found: {ckpt}")
@@ -48,55 +37,54 @@ def evaluate():
         print(f"  step={step:>6,}  running {config.EVAL_EPISODES} episodes ...", end=" ")
 
         # Average policy entropy over sampled states
-        sample_states = all_states[:config.ENTROPY_SAMPLE_STATES]
-        avg_entropy = M.compute_avg_entropy(model, sample_states)
+        avg_entropy = M.compute_avg_entropy(
+            model,
+            all_states[:config.ENTROPY_SAMPLE_STATES],
+        )
+
+        episode_rewards = []
+        episode_lengths = []
+        goals_reached   = []
+        coin_visits_list= []
 
         # Run evaluation episodes
-        episode_rewards  = []
-        episode_lengths  = []
-        goals_reached    = []
-        coin_visits_list = []
-        state_visit_counter = {}
-        action_counts = np.zeros(env.action_space.n)
-
         for ep in range(config.EVAL_EPISODES):
-            obs, _ = env.reset(seed=config.SEED + ep)
-            done   = False
+            obs, info = env.reset(seed=config.SEED + ep)
+            done = False
             ep_reward = 0.0
-            ep_len    = 0
+            ep_length = 0
             ep_states = {}
+            action_counts = np.zeros(env.action_space.n)
 
             while not done:
+                s_key = M.state_to_key(obs)
+                ep_states[s_key] = ep_states.get(s_key, 0) + 1
+
                 action, _ = model.predict(obs, deterministic=True)
-                action     = int(action)
                 action_counts[action] += 1
 
-                # track state visitation
-                sk = M.state_to_key(obs)
-                ep_states[sk] = ep_states.get(sk, 0) + 1
-
                 obs, reward, terminated, truncated, info = env.step(action)
-                done       = terminated or truncated
                 ep_reward += reward
-                ep_len    += 1
+                ep_length += 1
+                done = terminated or truncated
 
             episode_rewards.append(ep_reward)
-            episode_lengths.append(ep_len)
-            goals_reached.append(int(info.get("goal_reached", False)))
+            episode_lengths.append(ep_length)
+            goals_reached.append(float(info.get("goal_reached", False)))
             coin_visits_list.append(info.get("coin_visits", 0))
 
-            # Aggregate state visitation across all episodes
-            for sk, cnt in ep_states.items():
-                state_visit_counter[sk] = state_visit_counter.get(sk, 0) + cnt
+            action_dist = (
+                (action_counts / action_counts.sum()).tolist()
+                if action_counts.sum() > 0
+                else []
+            )
 
-            # Build per-episode row
-            action_dist = (action_counts / max(action_counts.sum(), 1)).tolist()
             row = M.build_metric_row(
-                environment=ENV_NAME,
+                env_name=ENV_NAME,
                 training_step=step,
                 episode=ep,
                 proxy_reward=ep_reward,
-                episode_length=ep_len,
+                episode_length=ep_length,
                 goal_reached=bool(info.get("goal_reached", False)),
                 entropy=avg_entropy,
                 state_visitation=ep_states,
@@ -113,12 +101,19 @@ def evaluate():
               f"coins={mean_cv:.1f}  H={avg_entropy:.3f}")
 
     # Save CSV
-    df  = pd.DataFrame(all_rows, columns=M.COMMON_SCHEMA)
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     metrics_path = os.path.join(config.RESULTS_DIR, "metrics.csv")
-    df.to_csv(metrics_path, index=False)
+    try:
+        import pandas as pd
+        df = pd.DataFrame(all_rows, columns=M.COMMON_SCHEMA)
+        df.to_csv(metrics_path, index=False)
+    except ImportError:
+        with open(metrics_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=M.COMMON_SCHEMA)
+            writer.writeheader()
+            writer.writerows(all_rows)
     print(f"\n[OK] Metrics saved -> {metrics_path}")
-    return df
+    return all_rows
 
 
 if __name__ == "__main__":

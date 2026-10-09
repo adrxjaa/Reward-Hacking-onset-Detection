@@ -1,5 +1,5 @@
 """
-analyze.py - Plotting and analysis for the reward-hacking experiment.
+analyze.py - Plotting and analysis for the GridWorld baseline experiment.
 
 Loads evaluation metrics from results/metrics.csv and generates the
 specified data plots:
@@ -13,9 +13,9 @@ All plots are saved directly to results/.
 
 import os
 import json
-import torch  # loaded early to prevent Windows OpenMP/DLL runtime conflicts
+import csv
+from collections import defaultdict
 import numpy as np
-import pandas as pd
 import matplotlib
 matplotlib.use("Agg")  # non-interactive backend
 import matplotlib.pyplot as plt
@@ -23,8 +23,8 @@ import matplotlib.pyplot as plt
 import config
 
 
-def load_metrics(csv_path: str = None) -> pd.DataFrame:
-    """Load evaluation metrics CSV from results/metrics.csv."""
+def load_and_aggregate_metrics(csv_path: str = None):
+    """Load evaluation metrics CSV and compute per-step stats."""
     if csv_path is None:
         primary = os.path.join(config.RESULTS_DIR, "metrics.csv")
         fallback = os.path.join(config.RESULTS_DIR, "gridworld_metrics.csv")
@@ -39,48 +39,56 @@ def load_metrics(csv_path: str = None) -> pd.DataFrame:
             )
 
     print(f"Loading metrics from: {csv_path}")
-    df = pd.read_csv(csv_path)
 
-    # Parse extra_metrics to extract coin_visits if present
-    def extract_coin_visits(val):
-        if isinstance(val, str):
-            try:
-                data = json.loads(val)
-                return data.get("coin_visits", 0)
-            except Exception:
-                return 0
-        elif isinstance(val, dict):
-            return val.get("coin_visits", 0)
-        return 0
+    step_data = defaultdict(lambda: {
+        "proxy_reward": [],
+        "goal_reached": [],
+        "coin_visits": [],
+        "entropy": []
+    })
 
-    if "coin_visits" not in df.columns:
-        if "extra_metrics" in df.columns:
-            df["coin_visits"] = df["extra_metrics"].apply(extract_coin_visits)
-        else:
-            df["coin_visits"] = 0
+    with open(csv_path, mode="r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            step = int(row["training_step"])
+            reward = float(row["proxy_reward"])
+            goal = 1.0 if str(row["goal_reached"]).lower() in ["true", "1"] else 0.0
+            entropy = float(row["entropy"])
 
-    return df
+            # Extract coin visits
+            coin_visits = 0
+            if "coin_visits" in row:
+                try:
+                    coin_visits = float(row["coin_visits"])
+                except ValueError:
+                    coin_visits = 0
+            elif "extra_metrics" in row and row["extra_metrics"]:
+                try:
+                    extra = json.loads(row["extra_metrics"])
+                    coin_visits = float(extra.get("coin_visits", 0))
+                except Exception:
+                    coin_visits = 0
 
+            step_data[step]["proxy_reward"].append(reward)
+            step_data[step]["goal_reached"].append(goal)
+            step_data[step]["coin_visits"].append(coin_visits)
+            step_data[step]["entropy"].append(entropy)
 
-def aggregate_metrics(df: pd.DataFrame) -> pd.DataFrame:
-    """Compute per-checkpoint mean and std for each key metric."""
-    grouped = df.groupby("training_step")
-    agg = grouped.agg(
-        proxy_reward_mean=("proxy_reward", "mean"),
-        proxy_reward_std=("proxy_reward", "std"),
-        goal_reached_mean=("goal_reached", "mean"),
-        coin_visits_mean=("coin_visits", "mean"),
-        coin_visits_std=("coin_visits", "std"),
-        entropy_mean=("entropy", "mean"),
-    ).reset_index()
+    sorted_steps = sorted(step_data.keys())
+    agg = {
+        "training_step": np.array(sorted_steps),
+        "proxy_reward_mean": np.array([np.mean(step_data[s]["proxy_reward"]) for s in sorted_steps]),
+        "goal_reached_mean": np.array([np.mean(step_data[s]["goal_reached"]) for s in sorted_steps]),
+        "coin_visits_mean": np.array([np.mean(step_data[s]["coin_visits"]) for s in sorted_steps]),
+        "entropy_mean": np.array([np.mean(step_data[s]["entropy"]) for s in sorted_steps]),
+    }
     return agg
 
 
-def plot_reward_over_training(agg: pd.DataFrame, out_dir: str):
-    """Plot average proxy reward vs training steps."""
+def plot_reward_over_training(agg: dict, out_dir: str):
     fig, ax = plt.subplots(figsize=(7, 4.5), dpi=150)
-    steps = agg["training_step"].values
-    rewards = agg["proxy_reward_mean"].values
+    steps = agg["training_step"]
+    rewards = agg["proxy_reward_mean"]
 
     ax.plot(steps, rewards, marker="o", color="#1f77b4", linewidth=2, markersize=6, label="Mean Proxy Reward")
     ax.set_title("Proxy Reward over Training", fontsize=13, fontweight="bold", pad=10)
@@ -97,11 +105,10 @@ def plot_reward_over_training(agg: pd.DataFrame, out_dir: str):
     print(f"Saved: {out_path}")
 
 
-def plot_goal_success_over_training(agg: pd.DataFrame, out_dir: str):
-    """Plot goal success rate vs training steps."""
+def plot_goal_success_over_training(agg: dict, out_dir: str):
     fig, ax = plt.subplots(figsize=(7, 4.5), dpi=150)
-    steps = agg["training_step"].values
-    goal_rate = agg["goal_reached_mean"].values * 100.0
+    steps = agg["training_step"]
+    goal_rate = agg["goal_reached_mean"] * 100.0
 
     ax.plot(steps, goal_rate, marker="s", color="#2ca02c", linewidth=2, markersize=6, label="Goal Success Rate (%)")
     ax.set_title("Goal Success Rate over Training", fontsize=13, fontweight="bold", pad=10)
@@ -119,11 +126,10 @@ def plot_goal_success_over_training(agg: pd.DataFrame, out_dir: str):
     print(f"Saved: {out_path}")
 
 
-def plot_coin_visits_over_training(agg: pd.DataFrame, out_dir: str):
-    """Plot average coin visits vs training steps."""
+def plot_coin_visits_over_training(agg: dict, out_dir: str):
     fig, ax = plt.subplots(figsize=(7, 4.5), dpi=150)
-    steps = agg["training_step"].values
-    coin_visits = agg["coin_visits_mean"].values
+    steps = agg["training_step"]
+    coin_visits = agg["coin_visits_mean"]
 
     ax.plot(steps, coin_visits, marker="^", color="#d62728", linewidth=2, markersize=6, label="Average Coin Visits")
     ax.set_title("Coin Visits over Training", fontsize=13, fontweight="bold", pad=10)
@@ -140,11 +146,10 @@ def plot_coin_visits_over_training(agg: pd.DataFrame, out_dir: str):
     print(f"Saved: {out_path}")
 
 
-def plot_entropy_over_training(agg: pd.DataFrame, out_dir: str):
-    """Plot average policy entropy vs training steps."""
+def plot_entropy_over_training(agg: dict, out_dir: str):
     fig, ax = plt.subplots(figsize=(7, 4.5), dpi=150)
-    steps = agg["training_step"].values
-    entropy = agg["entropy_mean"].values
+    steps = agg["training_step"]
+    entropy = agg["entropy_mean"]
 
     ax.plot(steps, entropy, marker="d", color="#9467bd", linewidth=2, markersize=6, label="Policy Entropy")
     ax.set_title("Policy Entropy over Training", fontsize=13, fontweight="bold", pad=10)
@@ -162,13 +167,14 @@ def plot_entropy_over_training(agg: pd.DataFrame, out_dir: str):
 
 
 def analyze(results_dir: str = config.RESULTS_DIR):
-    """Run analysis and generate the four requested plots."""
     os.makedirs(results_dir, exist_ok=True)
-    df = load_metrics()
-    agg = aggregate_metrics(df)
+    agg = load_and_aggregate_metrics()
 
     print("\n--- Aggregated Training Dynamics ---")
-    print(agg[["training_step", "proxy_reward_mean", "goal_reached_mean", "coin_visits_mean", "entropy_mean"]].to_string(index=False))
+    print(f"{'Step':>8} | {'Proxy':>8} | {'Goal%':>8} | {'CoinVisits':>10} | {'Entropy':>8}")
+    print("-" * 52)
+    for i, s in enumerate(agg["training_step"]):
+        print(f"{s:8d} | {agg['proxy_reward_mean'][i]:8.2f} | {agg['goal_reached_mean'][i]*100:7.1f}% | {agg['coin_visits_mean'][i]:10.1f} | {agg['entropy_mean'][i]:8.4f}")
     print("------------------------------------\n")
 
     plot_reward_over_training(agg, results_dir)
