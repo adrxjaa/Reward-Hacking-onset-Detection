@@ -12,18 +12,27 @@ This document provides a concise architectural overview and audit history of the
 
 ```
 Reward-Hacking-onset-Detection/
-├── baselines/                    # Person 1 Work: GridWorld prototype baseline
-│   └── gridworld/
-│       ├── environment.py        # 5x5 GridWorld with respawning coin exploit
-│       ├── train.py              # PPO baseline training loop
+├── baselines/                    # Baseline Proof-of-Concept Prototypes
+│   ├── gridworld/                # Person 1 Work: 5x5 GridWorld (Coin Respawn)
+│   │   ├── environment.py        # GridWorldEnv
+│   │   ├── train.py              # PPO baseline training loop
+│   │   ├── evaluate.py           # Evaluation loop
+│   │   ├── metrics.py            # Metrics schema & entropy calculation
+│   │   ├── analyze.py            # Aggregated dynamics plots
+│   │   ├── run_all.py            # Self-contained baseline runner
+│   │   ├── config.py             # Baseline hyper-parameters
+│   │   └── README.md             # Baseline documentation
+│   │
+│   └── battery_collector/        # Person 3 Work (Anjali): 5x5 Battery Collector
+│       ├── environment.py        # BatteryCollectorEnv
+│       ├── train.py              # PPO training loop
 │       ├── evaluate.py           # Evaluation loop
-│       ├── metrics.py            # Metrics schema & entropy calculation
-│       ├── analyze.py            # Aggregated dynamics plots
-│       ├── run_all.py            # Self-contained baseline runner
-│       ├── config.py             # Baseline hyper-parameters
+│       ├── analyze.py            # Dynamics plots
+│       ├── run_all.py            # Self-contained runner
+│       ├── config.py             # Configuration
 │       └── README.md             # Baseline documentation
 │
-├── rhd/                          # Person 2 Work: Modular research package
+├── rhd/                          # Person 2 Work (Sabari): Modular research package
 │   ├── envs/
 │   │   ├── region_toggle.py      # RegionToggleEnv (quarantined rewards, boundary exploit)
 │   │   └── __init__.py
@@ -47,7 +56,8 @@ Reward-Hacking-onset-Detection/
 │   ├── run_pilot.py              # Multi-condition pilot sweep runner
 │   ├── plot_onset.py             # Multi-panel onset curve plotting
 │   ├── plot_smoke.py             # Behavioral feature diagnostic plots
-│   └── debug_region_toggle.py    # Interactive step-by-step ANSI terminal visualizer
+│   ├── debug_region_toggle.py    # Interactive step-by-step ANSI terminal visualizer
+│   └── combine_metrics.py        # Baseline cross-environment dataset merger
 │
 ├── tests/                        # Automated unit test suite (27 tests, 100% pass)
 │   ├── test_region_toggle.py     # Environment mechanics & reward isolation
@@ -60,11 +70,11 @@ Reward-Hacking-onset-Detection/
 │   ├── MID_REVIEW_AUDIT.md       # Comprehensive mid-review technical dossier
 │   └── CODEBASE_AUDIT.md         # Architecture and codebase index (this file)
 │
-├── checkpoints/gridworld/        # Baseline trained model checkpoints
-├── results/                      # Baseline metrics CSV and generated figures
+├── checkpoints/gridworld/        # Baseline model checkpoints
+├── results/                      # Baseline metrics CSVs and figures
 ├── requirements-pinned.txt       # Exact reproducible environment dependencies
 ├── requirements.txt              # High-level package requirements
-├── run_all.py                    # Top-level unified CLI runner (--baseline / --pilot / --onset)
+├── run_all.py                    # Top-level unified CLI runner
 └── README.md                     # Main repository presentation & quickstart
 ```
 
@@ -72,16 +82,16 @@ Reward-Hacking-onset-Detection/
 
 ## 2. Division of Duties Summary
 
-| Area | Person 1 (Adrija / adrxjaa) | Person 2 (Sabari / sabarixr) |
-|---|---|---|
-| **Phase** | Phase 0: Baseline Proof-of-Concept | Phase 1: Modular Engine & Onset Framework |
-| **Environment** | `baselines/gridworld/environment.py` | `rhd/envs/region_toggle.py` |
-| **Exploit Dynamic** | Respawning coin (+1 per 5 steps) | Boundary-crossing oscillation (+w per entry) |
-| **Reward Isolation** | Conflated proxy & true reward | Strict segregation (`expose_eval_info` quarantine) |
-| **Feature Extraction**| Evaluation CSV metrics | Standalone probe-state policy divergence (TVD/JSD) |
-| **Onset Detection** | None (Visual inspection only) | Formal mathematical $O_1$ and $O_2$ algorithms |
-| **Testing** | No tests | 27 automated unit tests (`tests/`) |
-| **Dependency Lock** | Unpinned requirements | Fully pinned lockfile (`requirements-pinned.txt`) |
+| Area | Person 1: Adrija | Person 2: Sabari | Person 3: Anjali |
+|---|---|---|---|
+| **Phase** | Phase 0 Baseline | Phase 1 Modular Engine & Detector | Phase 0 Parallel Baseline |
+| **Environment** | `baselines/gridworld/` | `rhd/envs/region_toggle.py` | `baselines/battery_collector/` |
+| **Exploit Dynamic** | Respawning coin (+1 per 5s) | Boundary oscillation (+w per entry) | Respawning battery (+1 per 3s) |
+| **Reward Isolation** | Conflated | **Strictly Quarantined** (`expose_eval_info`) | Conflated |
+| **Feature Extraction**| CSV metrics | Probe-state policy divergence (TVD/JSD) | CSV metrics |
+| **Onset Detection** | None | Formal mathematical $O_1$ and $O_2$ | None |
+| **Testing** | None | 27 automated unit tests (`tests/`) | None |
+| **Dependency Lock** | Unpinned | Pinned (`requirements-pinned.txt`) | Unpinned |
 
 ---
 
@@ -92,11 +102,14 @@ Reward-Hacking-onset-Detection/
 .venv/bin/python -m pytest
 
 # 2. Run the GridWorld baseline
-.venv/bin/python run_all.py --baseline
+.venv/bin/python run_all.py --gridworld
 
-# 3. Run the RegionToggle pilot sweep
+# 3. Run the Battery Collector baseline
+.venv/bin/python run_all.py --battery
+
+# 4. Run the RegionToggle pilot sweep
 .venv/bin/python run_all.py --pilot
 
-# 4. Generate onset analysis plots
+# 5. Generate onset analysis plots
 .venv/bin/python run_all.py --onset
 ```

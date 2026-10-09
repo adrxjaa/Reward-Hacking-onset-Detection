@@ -15,9 +15,11 @@ A research framework designed to study **reward hacking (specification gaming)**
 * 👥 **Clear Division of Duties:**
   * **Person 1 (Adrija):** Initial 5×5 coin-respawn GridWorld prototype & baseline measurement scripts (`baselines/gridworld/`).
   * **Person 2 (Sabari):** Modular architecture (`rhd/`), `RegionToggleEnv` with strict reward quarantine, probe-state feature extraction engine, formal $O_1$/$O_2$ onset detection algorithms, multi-condition pilot sweeps, and the 27-test automated test suite.
+  * **Person 3 (Anjali):** Energy-harvesting Battery Collector baseline environment (`baselines/battery_collector/`) and cross-environment data merger (`scripts/combine_metrics.py`).
 * 🧪 **Empirical Findings:**
   * **Control ($w=0.0$):** Zero hacking, 100% goal success, 0 false positive onsets.
   * **Exploit ($w=1.0, 5.0$):** Maximum exploit oscillation (50 entries/episode), sustained proxy returns, $O_2$ onset confirmed at step 15,000.
+  * **Combined Baseline Dataset:** 280 standardized evaluation rows spanning both GridWorld and Battery Collector in `results/combined_metrics.csv`.
 * ✅ **Verification:** 27 automated unit tests passing (100% pass rate).
 
 ---
@@ -42,7 +44,10 @@ pytest
 ### 3. Unified Runner CLI
 ```bash
 # Run Person 1's GridWorld baseline
-python run_all.py --baseline
+python run_all.py --gridworld
+
+# Run Person 3's Battery Collector baseline
+python run_all.py --battery
 
 # Run Person 2's RegionToggle pilot parameter sweep (w=0.0, 1.0, 5.0)
 python run_all.py --pilot
@@ -66,8 +71,9 @@ Reward-Hacking-onset-Detection/
 │   ├── generators/               # PPO training pipeline with dense checkpointing
 │   └── evaluation/               # Mathematical O1/O2 onset detection algorithms
 │
-├── baselines/                    # Person 1 Work: GridWorld prototype baseline
-│   └── gridworld/                # Self-contained baseline scripts and docs
+├── baselines/                    # Proof-of-concept baseline environments
+│   ├── gridworld/                # Person 1 Work: GridWorld prototype baseline
+│   └── battery_collector/        # Person 3 Work: Battery Collector baseline
 │
 ├── experiments/pilot/            # Pilot parameter sweeps (run_w0.0, run_w1.0, run_w5.0)
 ├── scripts/                      # Plotting and debugging CLI scripts

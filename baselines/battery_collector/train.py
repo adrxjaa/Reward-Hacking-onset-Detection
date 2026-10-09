@@ -1,20 +1,23 @@
-
 """
-train3.py - PPO training pipeline for Battery Collector.
+train.py - PPO training pipeline for Battery Collector.
 
 Saves checkpoints at the shared schedule:
 0, 5000, 10000, 20000, 30000, 40000, 50000.
-
-This script does not modify train.py or the GridWorld experiment.
 """
 
 import os
+import sys
+
+# Ensure local imports work
+CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+if CUR_DIR not in sys.path:
+    sys.path.insert(0, CUR_DIR)
 
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
 
 import config
-from environment3 import BatteryCollectorEnv, ENV_NAME
+from environment import BatteryCollectorEnv, ENV_NAME
 
 
 def train():
@@ -58,13 +61,7 @@ def train():
         print(f"[ckpt] {target_step:,} steps -> {path}")
         previous_step = target_step
 
-    env.close()
-
-    print("\n[OK] Battery Collector training complete.")
-    print(
-        "Checkpoints saved to:",
-        os.path.join(config.CHECKPOINT_DIR, ENV_NAME),
-    )
+    print(f"\n[OK] Training completed for '{ENV_NAME}'.")
 
 
 if __name__ == "__main__":
