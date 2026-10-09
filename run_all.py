@@ -47,6 +47,14 @@ def run_onset():
     subprocess.check_call([sys.executable, script])
 
 
+def run_terminals(use_tmux=False):
+    script = os.path.join(os.path.dirname(__file__), "scripts", "launch_3_terminals.py")
+    cmd = [sys.executable, script]
+    if use_tmux:
+        cmd.append("--tmux")
+    subprocess.check_call(cmd)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Unified experiment runner.")
     parser.add_argument("--gridworld", "--baseline", dest="gridworld", action="store_true", help="Run GridWorld baseline")
@@ -54,12 +62,18 @@ def main():
     parser.add_argument("--pilot", action="store_true", help="Run RegionToggle pilot sweep")
     parser.add_argument("--onset", action="store_true", help="Run onset evaluation and plotting")
     parser.add_argument("--all", action="store_true", help="Run all baselines, pilots, and onset")
+    parser.add_argument("--terminals", "--parallel", dest="terminals", action="store_true", help="Pop up 3 separate terminal windows running all 3 environments")
+    parser.add_argument("--tmux", action="store_true", help="Launch in a 3-way split tmux dashboard")
     args = parser.parse_args()
+
+    if args.terminals or args.tmux:
+        run_terminals(use_tmux=args.tmux)
+        return
 
     # If no flags passed, default to gridworld baseline for backwards-compatibility
     if not (args.gridworld or args.battery or args.pilot or args.onset or args.all):
         print("No mode specified. Defaulting to GridWorld baseline (--gridworld).")
-        print("Pass --help to see available flags (--gridworld, --battery, --pilot, --onset, --all).\n")
+        print("Pass --help to see available flags (--gridworld, --battery, --pilot, --onset, --terminals, --all).\n")
         run_gridworld()
         return
 
