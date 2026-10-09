@@ -102,6 +102,7 @@ class GridWorldEnv(gym.Env):
 
     def step(self, action: int):
         self._step_count += 1
+        action = int(action)
 
         # Move agent (clamp to grid boundaries)
         dr, dc = ACTIONS[action]

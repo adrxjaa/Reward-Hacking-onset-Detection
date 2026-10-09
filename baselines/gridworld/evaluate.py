@@ -61,6 +61,7 @@ def evaluate():
                 ep_states[s_key] = ep_states.get(s_key, 0) + 1
 
                 action, _ = model.predict(obs, deterministic=True)
+                action = int(action)
                 action_counts[action] += 1
 
                 obs, reward, terminated, truncated, info = env.step(action)
@@ -80,7 +81,7 @@ def evaluate():
             )
 
             row = M.build_metric_row(
-                env_name=ENV_NAME,
+                environment=ENV_NAME,
                 training_step=step,
                 episode=ep,
                 proxy_reward=ep_reward,

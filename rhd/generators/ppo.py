@@ -70,6 +70,8 @@ class EvalAndCheckpointCallback(BaseCallback):
         with open(self.metrics_file, "a") as f:
             f.write(json.dumps(eval_metrics) + "\n")
 
+        print(f"  [ckpt] {step:>6,} steps | Proxy: {eval_metrics['mean_proxy_return']:>6.2f} | True: {eval_metrics['mean_true_return']:>4.1f} | Goal%: {eval_metrics['mean_goal_success']*100:>5.1f}% | Entries: {eval_metrics['mean_region_entries']:>4.1f}", flush=True)
+
     def _evaluate(self, step: int) -> Dict[str, Any]:
         proxy_returns = []
         true_returns = []
