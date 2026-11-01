@@ -1,0 +1,17 @@
+config_name,model_type,learning_rate,soft_target_tau,balanced_sampling,decision_threshold,persistence,val_f1,val_precision,val_recall,val_clean_fpr,val_regret,train_f1
+lstm_lr1e-3_tau0.05_bal_th0.0_p1,improved_lstm,0.001,0.05,True,0.0,1,1.000,1.000,1.000,0.000,0.89,1.000
+lstm_lr1e-3_tau0.05_bal_th0.5_p1,improved_lstm,0.001,0.05,True,0.5,1,1.000,1.000,1.000,0.000,0.89,1.000
+lstm_lr1e-3_tau0.05_bal_th1.0_p1,improved_lstm,0.001,0.05,True,1.0,1,1.000,1.000,1.000,0.000,0.89,1.000
+lstm_lr1e-3_tau0.05_bal_th1.5_p1,improved_lstm,0.001,0.05,True,1.5,1,1.000,1.000,1.000,0.000,0.89,1.000
+lstm_lr1e-3_tau0.05_bal_th0.0_p2,improved_lstm,0.001,0.05,True,0.0,2,1.000,1.000,1.000,0.000,2.67,1.000
+lstm_lr1e-3_tau0.05_bal_th1.0_p2,improved_lstm,0.001,0.05,True,1.0,2,1.000,1.000,1.000,0.000,2.67,1.000
+lstm_lr5e-4_tau0.05_bal_th1.0_p1,improved_lstm,0.0005,0.05,True,1.0,1,1.000,1.000,1.000,0.000,0.89,1.000
+lstm_lr2e-3_tau0.05_bal_th1.0_p1,improved_lstm,0.002,0.05,True,1.0,1,1.000,1.000,1.000,0.000,0.89,1.000
+lstm_lr1e-3_tauNone_nobal_th0.0_p1,improved_lstm,0.001,,False,0.0,1,1.000,1.000,1.000,0.000,0.89,1.000
+mlp_lr1e-3_tau0.05_bal_th0.0_p1,improved_mlp,0.001,0.05,True,0.0,1,1.000,1.000,1.000,0.000,0.89,1.000
+mlp_lr1e-3_tau0.05_bal_th0.5_p1,improved_mlp,0.001,0.05,True,0.5,1,1.000,1.000,1.000,0.000,1.78,1.000
+mlp_lr1e-3_tau0.05_bal_th1.0_p1,improved_mlp,0.001,0.05,True,1.0,1,1.000,1.000,1.000,0.000,1.78,1.000
+mlp_lr1e-3_tau0.05_bal_th1.5_p1,improved_mlp,0.001,0.05,True,1.5,1,1.000,1.000,1.000,0.000,1.78,1.000
+mlp_lr1e-3_tau0.05_bal_th0.0_p2,improved_mlp,0.001,0.05,True,0.0,2,1.000,1.000,1.000,0.000,2.67,1.000
+mlp_lr1e-3_tau0.05_bal_th1.0_p2,improved_mlp,0.001,0.05,True,1.0,2,1.000,1.000,1.000,0.000,3.56,1.000
+mlp_lr5e-4_tau0.05_bal_th1.0_p1,improved_mlp,0.0005,0.05,True,1.0,1,1.000,1.000,1.000,0.000,0.89,1.000

@@ -45,30 +45,6 @@ class ReplayBuffer:
         batch = random.sample(self.buffer, batch_size)
         return self._tensorize_batch(batch, device)
 
-    def sample_balanced(
-        self,
-        batch_size: int,
-        flag_ratio: float = 0.25,
-        device: torch.device = torch.device("cpu"),
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        """
-        Sample a batch with balanced representation of FLAG actions to prevent
-        class-imbalance starvation in sequential stopping problems.
-        """
-        flag_transitions = [t for t in self.buffer if t[1] == 1]
-        wait_transitions = [t for t in self.buffer if t[1] == 0]
-
-        n_flag = min(len(flag_transitions), max(1, int(batch_size * flag_ratio))) if flag_transitions else 0
-        n_wait = batch_size - n_flag
-
-        if n_flag > 0 and len(wait_transitions) >= n_wait:
-            batch = random.sample(flag_transitions, n_flag) + random.sample(wait_transitions, n_wait)
-            random.shuffle(batch)
-        else:
-            batch = random.sample(self.buffer, batch_size)
-
-        return self._tensorize_batch(batch, device)
-
     def _tensorize_batch(
         self,
         batch: List[Tuple],

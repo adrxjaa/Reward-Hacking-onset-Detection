@@ -92,12 +92,10 @@ class Normalizer:
         return (features - self.mean) / self.std
 
     def to_dict(self) -> Dict[str, Any]:
-        from rhd.detectors.features import IMPROVED_FEATURE_NAMES
-        names = IMPROVED_FEATURE_NAMES if (self.mean is not None and len(self.mean) == len(IMPROVED_FEATURE_NAMES)) else FEATURE_NAMES
         return {
             "mean": self.mean.tolist() if self.mean is not None else [],
             "std": self.std.tolist() if self.std is not None else [],
-            "feature_names": names,
+            "feature_names": FEATURE_NAMES,
         }
 
     @classmethod
@@ -138,7 +136,6 @@ class DetectorEpisode:
 def load_episode_from_run(
     run_dir: str,
     use_independent_ground_truth: bool = True,
-    feature_mode: str = "original",
 ) -> Optional[DetectorEpisode]:
     """
     Load temporal features and onset metadata from a completed generator run directory.
@@ -171,11 +168,7 @@ def load_episode_from_run(
     steps = [int(r["environment_steps"]) for r in records]
     ckpt_ids = [str(r.get("checkpoint_id", f"step_{s}")) for r, s in zip(records, steps)]
 
-    if feature_mode == "improved":
-        from rhd.detectors.features import extract_improved_features_from_records
-        raw_feats = extract_improved_features_from_records(records)
-    else:
-        raw_feats = np.array([extract_feature_vector(r) for r in records], dtype=np.float32)
+    raw_feats = np.array([extract_feature_vector(r) for r in records], dtype=np.float32)
 
     # Determine ground-truth onset
     onset_step = None

@@ -1,0 +1,25 @@
+config_id,config_name,model_type,input_dim,partition,f1_mean,f1_std,precision_mean,precision_std,recall_mean,recall_std,clean_fpr_mean,clean_fpr_std,delay_mean,delay_std,regret_mean,regret_std
+baseline,Baseline (All 10 Features),LSTM-DQN,10,train,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.65,0.2,1.1556,0.3556
+baseline,Baseline (All 10 Features),LSTM-DQN,10,val,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,1.2,0.2449,2.1333,0.4355
+baseline,Baseline (All 10 Features),LSTM-DQN,10,unseen_p2,0.9833,0.0333,0.9833,0.0333,0.9833,0.0333,0.0,0.0,0.6045,0.3386,1.3444,0.579
+baseline,Baseline (All 10 Features),LSTM-DQN,10,final_test,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.7167,0.2915,1.2741,0.5183
+baseline,Baseline (All 10 Features),MLP-DQN,10,train,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.7,0.2915,1.2444,0.5183
+baseline,Baseline (All 10 Features),MLP-DQN,10,val,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,1.2,0.2449,2.1333,0.4355
+baseline,Baseline (All 10 Features),MLP-DQN,10,unseen_p2,0.9833,0.0333,0.9833,0.0333,0.9833,0.0333,0.0,0.0,0.8652,0.3142,1.7889,0.7765
+baseline,Baseline (All 10 Features),MLP-DQN,10,final_test,0.9359,0.0487,1.0,0.0,0.8833,0.085,0.0,0.0,0.7369,0.2946,3.7704,2.1468
+no_temporal,Temporal Feature Ablation,LSTM-DQN,7,train,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.85,0.4359,1.5111,0.7749
+no_temporal,Temporal Feature Ablation,LSTM-DQN,7,val,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,1.3,0.6782,2.3111,1.2057
+no_temporal,Temporal Feature Ablation,LSTM-DQN,7,unseen_p2,0.9667,0.0667,0.9667,0.0667,0.9667,0.0667,0.0,0.0,0.7567,0.5756,1.9593,1.1688
+no_temporal,Temporal Feature Ablation,LSTM-DQN,7,final_test,0.9667,0.0667,0.9667,0.0667,0.9667,0.0667,0.0,0.0,0.8067,0.6205,2.1185,1.3229
+no_temporal,Temporal Feature Ablation,MLP-DQN,7,train,0.8714,0.112,0.9,0.1225,0.85,0.1225,0.0,0.0,0.4833,0.4096,3.4778,2.3393
+no_temporal,Temporal Feature Ablation,MLP-DQN,7,val,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.5,0.4472,0.8889,0.795
+no_temporal,Temporal Feature Ablation,MLP-DQN,7,unseen_p2,0.95,0.0408,0.95,0.0408,0.95,0.0408,0.0,0.0,0.4515,0.416,1.6037,0.8027
+no_temporal,Temporal Feature Ablation,MLP-DQN,7,final_test,0.9,0.0816,0.9,0.0816,0.9,0.0816,0.0,0.0,0.51,0.4903,2.4963,1.3392
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,LSTM-DQN,7,train,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.45,0.2449,0.8,0.4355
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,LSTM-DQN,7,val,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.8,0.4,1.4222,0.7111
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,LSTM-DQN,7,unseen_p2,0.9,0.1225,0.9,0.1225,0.9,0.1225,0.0,0.0,0.2924,0.1858,2.1704,1.7584
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,LSTM-DQN,7,final_test,0.9333,0.1333,0.9333,0.1333,0.9333,0.1333,0.0,0.0,0.3833,0.2014,1.7926,1.8847
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,MLP-DQN,7,train,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.7,0.2915,1.2444,0.5183
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,MLP-DQN,7,val,1.0,0.0,1.0,0.0,1.0,0.0,0.0,0.0,0.9,0.4899,1.6,0.8709
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,MLP-DQN,7,unseen_p2,0.8819,0.0888,0.8985,0.097,0.8667,0.085,0.0,0.0,0.833,0.3466,3.7333,0.8062
+no_revisit_anomaly,Revisit / Anomaly Feature Ablation,MLP-DQN,7,final_test,0.8418,0.0829,0.8903,0.0902,0.8,0.085,0.0,0.0,0.7533,0.2517,5.0296,1.3765

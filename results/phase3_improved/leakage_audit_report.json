@@ -1,0 +1,60 @@
+{
+  "passed_all_checks": true,
+  "feature_schema_audit": {
+    "total_features": 16,
+    "feature_list": [
+      "proxy_return",
+      "proxy_return_smoothed",
+      "proxy_return_trend",
+      "episode_length",
+      "action_distribution_change",
+      "state_visitation_entropy",
+      "state_visitation_change",
+      "path_efficiency",
+      "revisit_rate",
+      "behavioral_dispersion",
+      "proxy_efficiency_divergence",
+      "entropy_trend",
+      "path_efficiency_trend",
+      "rolling_revisit_mean",
+      "rolling_entropy_std",
+      "consecutive_anomalous_count"
+    ],
+    "prohibited_fields_detected": [],
+    "passed": true
+  },
+  "causality_audit": {
+    "total_runs_checked": 48,
+    "causality_violations": [],
+    "passed": true
+  },
+  "normalization_audit": {
+    "train_runs_used_for_fitting": [
+      "run_w0.0",
+      "run_w0.0_s101",
+      "run_w1.0",
+      "run_w1.0_s101",
+      "run_w5.0",
+      "run_w5.0_s101"
+    ],
+    "test_runs_strictly_excluded": [
+      "run_w0.0_s303",
+      "run_w1.0_s303",
+      "run_w5.0_s303"
+    ],
+    "fitted_mean_dimension": 16,
+    "max_discrepancy_with_train_distribution": 0.0,
+    "passed": true
+  },
+  "observation_tensor_audit": {
+    "window_shape": [
+      4,
+      16
+    ],
+    "expected_shape": [
+      4,
+      16
+    ],
+    "passed": true
+  }
+}

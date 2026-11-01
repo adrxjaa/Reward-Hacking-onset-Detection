@@ -18,7 +18,7 @@
     "passed": true
   },
   "causality_audit": {
-    "total_runs_checked": 12,
+    "total_runs_checked": 48,
     "causality_violations": [],
     "passed": true
   },
@@ -36,6 +36,7 @@
       "run_w1.0_s303",
       "run_w5.0_s303"
     ],
+    "fitted_mean_dimension": 10,
     "max_discrepancy_with_train_distribution": 0.0,
     "passed": true
   },

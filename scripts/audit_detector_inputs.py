@@ -22,17 +22,15 @@ from rhd.detectors.environment import (
     DetectorEnv,
     Normalizer,
 )
-from rhd.detectors.features import IMPROVED_FEATURE_NAMES
 
 
 def run_leakage_audit(
     metadata_path: str = "results/detector/split_metadata.json",
     norm_path: str = "results/detector/norm_stats.json",
     output_report_path: str = "results/validation_phase2/leakage_audit_report.json",
-    feature_mode: str = "original",
 ) -> Dict[str, Any]:
     print("=" * 60)
-    print(f"  FORENSIC AUDIT: Detector Inputs & Zero-Leakage ({feature_mode.upper()})")
+    print("  FORENSIC AUDIT: Detector Inputs & Zero-Leakage (10-FEATURE)")
     print("=" * 60)
 
     report = {
@@ -43,7 +41,7 @@ def run_leakage_audit(
         "observation_tensor_audit": {},
     }
 
-    feature_names = IMPROVED_FEATURE_NAMES if feature_mode == "improved" else FEATURE_NAMES
+    feature_names = FEATURE_NAMES
     expected_dim = len(feature_names)
 
     # 1. Feature Schema & Prohibited Field Audit
@@ -131,7 +129,7 @@ def run_leakage_audit(
         # Compute empirical mean of train runs
         train_feats = []
         for rid in train_runs:
-            ep = load_episode_from_run(split_meta["run_paths"][rid], feature_mode=feature_mode)
+            ep = load_episode_from_run(split_meta["run_paths"][rid])
             if ep: train_feats.append(ep.features)
 
         train_concat = np.concatenate(train_feats, axis=0)
@@ -154,7 +152,7 @@ def run_leakage_audit(
 
     # 4. Observation Window Tensor Audit
     if os.path.exists(metadata_path):
-        ep = load_episode_from_run(list(split_meta["run_paths"].values())[0], feature_mode=feature_mode)
+        ep = load_episode_from_run(list(split_meta["run_paths"].values())[0])
         env = DetectorEnv(episodes=[ep], window_size=4)
         s0, info = env.reset(episode_idx=0)
         s1, r, done, s_info = env.step(DetectorEnv.ACTION_WAIT)
@@ -181,9 +179,7 @@ def run_leakage_audit(
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("--improved", action="store_true")
     ap.add_argument("--norm-path", default="results/detector/norm_stats.json")
     ap.add_argument("--output-path", default="results/validation_phase2/leakage_audit_report.json")
     args = ap.parse_args()
-    mode = "improved" if args.improved else "original"
-    run_leakage_audit(norm_path=args.norm_path, output_report_path=args.output_path, feature_mode=mode)
+    run_leakage_audit(norm_path=args.norm_path, output_report_path=args.output_path)

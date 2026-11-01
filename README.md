@@ -1,6 +1,6 @@
 # Detecting the Onset of Reward Hacking from RL Policy Behavior
 
-[![Tests](https://img.shields.io/badge/tests-38%20passed-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-40%20passed-brightgreen.svg)]()
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue.svg)]()
 [![Gymnasium](https://img.shields.io/badge/gymnasium-1.4.0-orange.svg)]()
 [![Stable--Baselines3](https://img.shields.io/badge/SB3-2.9.0-red.svg)]()
@@ -12,18 +12,18 @@ A research framework designed to study **reward hacking (specification gaming)**
 
 ## 📌 Research & Architecture Highlights
 
-* 🤖 **Dual-RL Sequential Detection Architecture:** Extended with an **LSTM-DQN Reward Hacking Onset Detector** (`rhd/detectors/`) that learns the optimal stopping rule to identify reward hacking onset from non-leaking behavioral checkpoint sequences. Full documentation at **[`docs/LSTM_DQN_DETECTOR.md`](docs/LSTM_DQN_DETECTOR.md)**.
-* 📖 **Comprehensive Mid-Review Audit:** Detailed technical dossier, empirical findings, and mathematical formulation available at **[`docs/MID_REVIEW_AUDIT.md`](docs/MID_REVIEW_AUDIT.md)**.
-* 👥 **Clear Division of Duties:**
-  * **Person 1 (Adrija):** Initial 5×5 coin-respawn GridWorld prototype & baseline measurement scripts (`baselines/gridworld/`).
-  * **Person 2 (Sabari):** Modular architecture (`rhd/`), `RegionToggleEnv` with strict reward quarantine, probe-state feature extraction engine, formal $O_1$/$O_2$ onset detection algorithms, multi-condition pilot sweeps, and unit tests.
-  * **Person 3 (Anjali):** Energy-harvesting Battery Collector baseline environment (`baselines/battery_collector/`) and cross-environment data merger (`scripts/combine_metrics.py`).
-  * **Learned Detection Extension:** LSTM-DQN sequential stopping detector with zero-leakage training rewards, run-level data partitioning, and comparative benchmarking.
-* 🧪 **Empirical Findings:**
-  * **Control ($w=0.0$):** Zero hacking, 100% goal success, 0 false alarms across both mathematical and LSTM-DQN detectors.
-  * **Exploit ($w=1.0, 5.0$):** Immediate exploit takeover, sustained proxy returns, $O_2$ onset confirmed at step 15,000.
-  * **LSTM-DQN Performance:** Achieves **1.000 F1-score** on unseen test runs, detecting 100% of reward hacking onsets with **0% false alarms** on clean controls and a low latency of 0–1 checkpoint.
-* ✅ **Verification:** 38 automated unit tests passing (100% pass rate).
+* 🤖 **Dual-RL Sequential Detection Architecture:** Equipped with original **LSTM-DQN** and **MLP-DQN** onset detectors (`rhd/detectors/`) that learn the optimal stopping rule to identify reward hacking onset from non-leaking behavioral checkpoint sequences. Full documentation at **[`docs/LSTM_DQN_DETECTOR.md`](docs/LSTM_DQN_DETECTOR.md)**.
+* 🔬 **Controlled 10-Feature Ablation Study:** Full empirical study investigating the relative contribution of temporal trend signals vs. spatial revisitation/anomaly signals across 5 random seeds on 4 partitions (Train, Validation, Unseen Phase 2, and Final Test). See **[`results/ablation_study/ablation_report.md`](results/ablation_study/ablation_report.md)**.
+* 📖 **Comprehensive Reports:**
+  * **Phase 3 Final Evaluation Report:** Multi-seed evaluation on held-out generator test runs (seeds 701–706).
+  * **Phase 2 Validation Report:** **[`docs/EXPERIMENTAL_VALIDATION_PHASE2.md`](docs/EXPERIMENTAL_VALIDATION_PHASE2.md)**.
+  * **Mid-Review Technical Dossier:** **[`docs/MID_REVIEW_AUDIT.md`](docs/MID_REVIEW_AUDIT.md)**.
+* 🧪 **Key Empirical Findings:**
+  * **Original LSTM-DQN:** Achieves **1.000 ± 0.000 F1-score** across 5 random seeds on 18 held-out generator test runs (seeds 701–706), with **0.0% clean false alarms** and **0.72 checkpoints detection delay**.
+  * **Original MLP-DQN:** Achieves **0.936 ± 0.049 F1-score** on the final test partition.
+  * **Feature Contribution:** Revisitation and spatial anomaly features (`path_efficiency`, `revisit_rate`, `behavioral_dispersion`) provide the largest marginal contribution; ablated models drop by ~10% F1 on MLP-DQN with a sharp surge in evaluation regret.
+  * **Zero Leakage:** Rigorous forensic audit confirms zero ground truth, temporal, or distributional leakage into detector inputs (`scripts/audit_detector_inputs.py`).
+* ✅ **Verification:** 40 automated unit tests passing (100% pass rate).
 
 ---
 
@@ -40,9 +40,9 @@ pip install -r requirements-pinned.txt
 
 ### 2. Run Test Suite
 ```bash
-python -m pytest
+python -m pytest -q
 ```
-*Expected output: `38 passed`.*
+*Expected output: `40 passed`.*
 
 ### 3. Unified Runner CLI
 ```bash
@@ -60,6 +60,9 @@ python run_all.py --onset
 
 # Run full LSTM-DQN detector pipeline (dataset prep, training, eval, and plots)
 python run_all.py --detector
+
+# Run Controlled 10-Feature Ablation Study (multi-seed across all 4 partitions)
+python scripts/run_feature_ablation.py --seeds 0 1 2 3 4 --episodes 300
 
 # Run entire pipeline end-to-end
 python run_all.py --all

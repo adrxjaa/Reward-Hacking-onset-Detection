@@ -1,0 +1,3587 @@
+{
+  "experiment_title": "Controlled 10-Feature Ablation Study for Reward-Hacking Onset Detection",
+  "timestamp": "2026-11-02T02:08:30Z",
+  "random_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "episodes_per_run": 300,
+  "configurations": {
+    "baseline": {
+      "name": "Baseline (All 10 Features)",
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "retained_features": [
+        "proxy_return",
+        "proxy_return_smoothed",
+        "proxy_return_trend",
+        "episode_length",
+        "action_distribution_change",
+        "state_visitation_entropy",
+        "state_visitation_change",
+        "path_efficiency",
+        "revisit_rate",
+        "behavioral_dispersion"
+      ],
+      "removed_features": [],
+      "description": "All 10 original behavioral features retained without modification."
+    },
+    "no_temporal": {
+      "name": "Temporal Feature Ablation",
+      "indices": [
+        0,
+        1,
+        3,
+        5,
+        7,
+        8,
+        9
+      ],
+      "retained_features": [
+        "proxy_return",
+        "proxy_return_smoothed",
+        "episode_length",
+        "state_visitation_entropy",
+        "path_efficiency",
+        "revisit_rate",
+        "behavioral_dispersion"
+      ],
+      "removed_features": [
+        "proxy_return_trend",
+        "action_distribution_change",
+        "state_visitation_change"
+      ],
+      "description": "Removes inter-checkpoint difference and trend signals; retains static episode stats and spatial metrics."
+    },
+    "no_revisit_anomaly": {
+      "name": "Revisit / Anomaly Feature Ablation",
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "retained_features": [
+        "proxy_return",
+        "proxy_return_smoothed",
+        "proxy_return_trend",
+        "episode_length",
+        "action_distribution_change",
+        "state_visitation_entropy",
+        "state_visitation_change"
+      ],
+      "removed_features": [
+        "path_efficiency",
+        "revisit_rate",
+        "behavioral_dispersion"
+      ],
+      "description": "Removes rollout path efficiency, state revisitation rate, and probe entropy dispersion."
+    }
+  },
+  "partition_sizes": {
+    "train": 6,
+    "val": 3,
+    "unseen_p2": 18,
+    "final_test": 18
+  },
+  "all_results": {
+    "baseline": {
+      "name": "Baseline (All 10 Features)",
+      "input_dim": 10,
+      "retained_features": [
+        "proxy_return",
+        "proxy_return_smoothed",
+        "proxy_return_trend",
+        "episode_length",
+        "action_distribution_change",
+        "state_visitation_entropy",
+        "state_visitation_change",
+        "path_efficiency",
+        "revisit_rate",
+        "behavioral_dispersion"
+      ],
+      "removed_features": [],
+      "description": "All 10 original behavioral features retained without modification.",
+      "detectors": {
+        "lstm": {
+          "seed_runs": [
+            {
+              "seed": 0,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 5.218937699999515,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.25,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 0.44444444444444464
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.4166666666666667,
+                  "std_delay_ckpts": 0.4930066485916347,
+                  "eval_regret_per_run": 0.740740740740741
+                }
+              }
+            },
+            {
+              "seed": 1,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 5.499689000000217,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9166666666666666,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9166666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.2727272727272727,
+                  "std_delay_ckpts": 0.4453617714151233,
+                  "eval_regret_per_run": 1.8333333333333333
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.4166666666666667,
+                  "std_delay_ckpts": 0.4930066485916347,
+                  "eval_regret_per_run": 0.740740740740741
+                }
+              }
+            },
+            {
+              "seed": 2,
+              "best_val_f1": 1.0,
+              "selected_episode": 50,
+              "train_wall_s": 4.984442699998908,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5833333333333334,
+                  "std_delay_ckpts": 0.6400954789890506,
+                  "eval_regret_per_run": 1.0370370370370374
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.6666666666666666,
+                  "std_delay_ckpts": 0.4714045207910317,
+                  "eval_regret_per_run": 1.1851851851851858
+                }
+              }
+            },
+            {
+              "seed": 3,
+              "best_val_f1": 1.0,
+              "selected_episode": 70,
+              "train_wall_s": 4.992768199997954,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.1666666666666667,
+                  "std_delay_ckpts": 0.37267799624996495,
+                  "eval_regret_per_run": 2.0740740740740744
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.1666666666666667,
+                  "std_delay_ckpts": 0.37267799624996495,
+                  "eval_regret_per_run": 2.0740740740740744
+                }
+              }
+            },
+            {
+              "seed": 4,
+              "best_val_f1": 1.0,
+              "selected_episode": 50,
+              "train_wall_s": 5.6446021999981895,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 1.333333333333334
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.5951190357119042,
+                  "eval_regret_per_run": 1.333333333333334
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.9166666666666666,
+                  "std_delay_ckpts": 0.2763853991962833,
+                  "eval_regret_per_run": 1.6296296296296304
+                }
+              }
+            }
+          ],
+          "summary": {
+            "train": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.65,
+                "std": 0.2
+              },
+              "regret_per_run": {
+                "mean": 1.1555555555555561,
+                "std": 0.35555555555555574
+              }
+            },
+            "val": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 1.2,
+                "std": 0.2449489742783178
+              },
+              "regret_per_run": {
+                "mean": 2.133333333333334,
+                "std": 0.43546484316145384
+              }
+            },
+            "unseen_p2": {
+              "f1": {
+                "mean": 0.9833333333333332,
+                "std": 0.03333333333333335
+              },
+              "precision": {
+                "mean": 0.9833333333333332,
+                "std": 0.03333333333333335
+              },
+              "recall": {
+                "mean": 0.9833333333333332,
+                "std": 0.03333333333333335
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.6045454545454545,
+                "std": 0.3386422953856455
+              },
+              "regret_per_run": {
+                "mean": 1.3444444444444446,
+                "std": 0.5789636453235297
+              }
+            },
+            "final_test": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.7166666666666667,
+                "std": 0.29154759474226505
+              },
+              "regret_per_run": {
+                "mean": 1.2740740740740746,
+                "std": 0.5183068350973601
+              }
+            }
+          }
+        },
+        "mlp": {
+          "seed_runs": [
+            {
+              "seed": 0,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 2.505879199998162,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 1.333333333333334
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9166666666666666,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9166666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.9090909090909091,
+                  "std_delay_ckpts": 0.899954085146515,
+                  "eval_regret_per_run": 2.8703703703703707
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 0,
+                    "FN": 2,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.9090909090909091,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.16666666666666666,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 4.51851851851852
+                }
+              }
+            },
+            {
+              "seed": 1,
+              "best_val_f1": 1.0,
+              "selected_episode": 70,
+              "train_wall_s": 2.838727700000163,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.7216878364870323,
+                  "eval_regret_per_run": 1.333333333333334
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 0,
+                    "FN": 1,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9565217391304348,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.08333333333333333,
+                  "mean_delay_ckpts": 0.6363636363636364,
+                  "std_delay_ckpts": 0.6428243465332251,
+                  "eval_regret_per_run": 2.925925925925927
+                }
+              }
+            },
+            {
+              "seed": 2,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 2.7000910000024305,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.25,
+                  "std_delay_ckpts": 0.7216878364870323,
+                  "eval_regret_per_run": 2.222222222222223
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 9,
+                    "EARLY": 0,
+                    "FN": 3,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.75,
+                  "f1": 0.8571428571428571,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.25,
+                  "mean_delay_ckpts": 1.2222222222222223,
+                  "std_delay_ckpts": 0.41573970964154905,
+                  "eval_regret_per_run": 7.296296296296297
+                }
+              }
+            },
+            {
+              "seed": 3,
+              "best_val_f1": 1.0,
+              "selected_episode": 80,
+              "train_wall_s": 2.840294100002211,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.25,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 0.44444444444444464
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 1.0,
+                  "eval_regret_per_run": 1.777777777777778
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.3333333333333333,
+                  "std_delay_ckpts": 0.6236095644623235,
+                  "eval_regret_per_run": 0.5925925925925928
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.4166666666666667,
+                  "std_delay_ckpts": 0.4930066485916347,
+                  "eval_regret_per_run": 0.740740740740741
+                }
+              }
+            },
+            {
+              "seed": 4,
+              "best_val_f1": 1.0,
+              "selected_episode": 50,
+              "train_wall_s": 2.740189800002554,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0833333333333333,
+                  "std_delay_ckpts": 0.6400954789890507,
+                  "eval_regret_per_run": 1.9259259259259265
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 0,
+                    "FN": 1,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9565217391304348,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.08333333333333333,
+                  "mean_delay_ckpts": 0.9090909090909091,
+                  "std_delay_ckpts": 0.51425947722658,
+                  "eval_regret_per_run": 3.370370370370372
+                }
+              }
+            }
+          ],
+          "summary": {
+            "train": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.7,
+                "std": 0.291547594742265
+              },
+              "regret_per_run": {
+                "mean": 1.244444444444445,
+                "std": 0.5183068350973603
+              }
+            },
+            "val": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 1.2,
+                "std": 0.2449489742783178
+              },
+              "regret_per_run": {
+                "mean": 2.133333333333334,
+                "std": 0.435464843161454
+              }
+            },
+            "unseen_p2": {
+              "f1": {
+                "mean": 0.9833333333333332,
+                "std": 0.03333333333333335
+              },
+              "precision": {
+                "mean": 0.9833333333333332,
+                "std": 0.03333333333333335
+              },
+              "recall": {
+                "mean": 0.9833333333333332,
+                "std": 0.03333333333333335
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.8651515151515152,
+                "std": 0.31423964815699057
+              },
+              "regret_per_run": {
+                "mean": 1.7888888888888892,
+                "std": 0.7765068982069401
+              }
+            },
+            "final_test": {
+              "f1": {
+                "mean": 0.9358554488989272,
+                "std": 0.04874572233933291
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 0.8833333333333334,
+                "std": 0.08498365855987973
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.7368686868686869,
+                "std": 0.2946068301464546
+              },
+              "regret_per_run": {
+                "mean": 3.770370370370371,
+                "std": 2.1467939537448375
+              }
+            }
+          }
+        }
+      }
+    },
+    "no_temporal": {
+      "name": "Temporal Feature Ablation",
+      "input_dim": 7,
+      "retained_features": [
+        "proxy_return",
+        "proxy_return_smoothed",
+        "episode_length",
+        "state_visitation_entropy",
+        "path_efficiency",
+        "revisit_rate",
+        "behavioral_dispersion"
+      ],
+      "removed_features": [
+        "proxy_return_trend",
+        "action_distribution_change",
+        "state_visitation_change"
+      ],
+      "description": "Removes inter-checkpoint difference and trend signals; retains static episode stats and spatial metrics.",
+      "detectors": {
+        "lstm": {
+          "seed_runs": [
+            {
+              "seed": 0,
+              "best_val_f1": 1.0,
+              "selected_episode": 70,
+              "train_wall_s": 6.05942320000031,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.8660254037844386,
+                  "eval_regret_per_run": 0.888888888888889
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 1.0,
+                  "eval_regret_per_run": 1.777777777777778
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.924211375534118,
+                  "eval_regret_per_run": 1.3333333333333337
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.6666666666666666,
+                  "std_delay_ckpts": 0.74535599249993,
+                  "eval_regret_per_run": 1.1851851851851856
+                }
+              }
+            },
+            {
+              "seed": 1,
+              "best_val_f1": 1.0,
+              "selected_episode": 80,
+              "train_wall_s": 5.4520099999972444,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 2,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8333333333333334,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8333333333333334,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.2,
+                  "std_delay_ckpts": 0.4000000000000001,
+                  "eval_regret_per_run": 3.0740740740740744
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 2,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8333333333333334,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8333333333333334,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.2,
+                  "std_delay_ckpts": 0.4000000000000001,
+                  "eval_regret_per_run": 3.0740740740740744
+                }
+              }
+            },
+            {
+              "seed": 2,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 5.310415100000682,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.25,
+                  "std_delay_ckpts": 0.82915619758885,
+                  "eval_regret_per_run": 2.2222222222222228
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.6666666666666666,
+                  "std_delay_ckpts": 0.74535599249993,
+                  "eval_regret_per_run": 1.1851851851851858
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.6666666666666666,
+                  "std_delay_ckpts": 0.74535599249993,
+                  "eval_regret_per_run": 1.1851851851851856
+                }
+              }
+            },
+            {
+              "seed": 3,
+              "best_val_f1": 1.0,
+              "selected_episode": 90,
+              "train_wall_s": 5.350543000000471,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.3333333333333333,
+                  "std_delay_ckpts": 0.4714045207910317,
+                  "eval_regret_per_run": 0.5925925925925929
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                }
+              }
+            },
+            {
+              "seed": 4,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 5.283584600001632,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.8660254037844386,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 2.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 4.444444444444445
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.8333333333333333,
+                  "std_delay_ckpts": 1.1426091000668408,
+                  "eval_regret_per_run": 3.6111111111111125
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 2.0,
+                  "std_delay_ckpts": 1.1547005383792515,
+                  "eval_regret_per_run": 4.259259259259261
+                }
+              }
+            }
+          ],
+          "summary": {
+            "train": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.85,
+                "std": 0.43588989435406733
+              },
+              "regret_per_run": {
+                "mean": 1.5111111111111115,
+                "std": 0.7749153677405644
+              }
+            },
+            "val": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 1.3,
+                "std": 0.6782329983125269
+              },
+              "regret_per_run": {
+                "mean": 2.3111111111111113,
+                "std": 1.2057475525556032
+              }
+            },
+            "unseen_p2": {
+              "f1": {
+                "mean": 0.9666666666666668,
+                "std": 0.06666666666666667
+              },
+              "precision": {
+                "mean": 0.9666666666666668,
+                "std": 0.06666666666666667
+              },
+              "recall": {
+                "mean": 0.9666666666666668,
+                "std": 0.06666666666666667
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.7566666666666666,
+                "std": 0.5755770051773167
+              },
+              "regret_per_run": {
+                "mean": 1.95925925925926,
+                "std": 1.1687752843446533
+              }
+            },
+            "final_test": {
+              "f1": {
+                "mean": 0.9666666666666668,
+                "std": 0.06666666666666667
+              },
+              "precision": {
+                "mean": 0.9666666666666668,
+                "std": 0.06666666666666667
+              },
+              "recall": {
+                "mean": 0.9666666666666668,
+                "std": 0.06666666666666667
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.8066666666666666,
+                "std": 0.6205374015050718
+              },
+              "regret_per_run": {
+                "mean": 2.118518518518519,
+                "std": 1.3228808402199823
+              }
+            }
+          }
+        },
+        "mlp": {
+          "seed_runs": [
+            {
+              "seed": 0,
+              "best_val_f1": 1.0,
+              "selected_episode": 50,
+              "train_wall_s": 2.632797700000083,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 3,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 0.75,
+                  "recall": 0.75,
+                  "f1": 0.75,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.25,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.816496580927726,
+                  "eval_regret_per_run": 5.5
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 1.0,
+                  "eval_regret_per_run": 1.777777777777778
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9166666666666666,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9166666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0909090909090908,
+                  "std_delay_ckpts": 1.083306844346635,
+                  "eval_regret_per_run": 3.1666666666666665
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 2,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8333333333333334,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8333333333333334,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.3,
+                  "std_delay_ckpts": 1.0999999999999999,
+                  "eval_regret_per_run": 4.703703703703704
+                }
+              }
+            },
+            {
+              "seed": 1,
+              "best_val_f1": 1.0,
+              "selected_episode": 70,
+              "train_wall_s": 2.7023291000004974,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.82915619758885,
+                  "eval_regret_per_run": 1.3333333333333337
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 1.0,
+                  "eval_regret_per_run": 1.777777777777778
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.6666666666666666,
+                  "std_delay_ckpts": 0.8498365855987975,
+                  "eval_regret_per_run": 1.1851851851851856
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.82915619758885,
+                  "eval_regret_per_run": 1.3333333333333337
+                }
+              }
+            },
+            {
+              "seed": 2,
+              "best_val_f1": 1.0,
+              "selected_episode": 50,
+              "train_wall_s": 2.5200430000004417,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 3,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 0.75,
+                  "recall": 0.75,
+                  "f1": 0.75,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.25,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.6666666666666666,
+                  "std_delay_ckpts": 0.4714045207910317,
+                  "eval_regret_per_run": 5.055555555555556
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                }
+              }
+            },
+            {
+              "seed": 3,
+              "best_val_f1": 1.0,
+              "selected_episode": 90,
+              "train_wall_s": 2.5182322000000568,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 0.0
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 0.0
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9166666666666666,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9166666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.3888888888888888
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 2,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8333333333333334,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8333333333333334,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 2.7777777777777777
+                }
+              }
+            },
+            {
+              "seed": 4,
+              "best_val_f1": 1.0,
+              "selected_episode": 90,
+              "train_wall_s": 2.7595994000002975,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 3,
+                    "EARLY": 0,
+                    "FN": 1,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.75,
+                  "f1": 0.8571428571428571,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.25,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 5.5
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 0.0
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9166666666666666,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9166666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.3888888888888888
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 2,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8333333333333334,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8333333333333334,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 2.7777777777777777
+                }
+              }
+            }
+          ],
+          "summary": {
+            "train": {
+              "f1": {
+                "mean": 0.8714285714285713,
+                "std": 0.11203133672398659
+              },
+              "precision": {
+                "mean": 0.9,
+                "std": 0.1224744871391589
+              },
+              "recall": {
+                "mean": 0.85,
+                "std": 0.1224744871391589
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.4833333333333333,
+                "std": 0.4096068575814836
+              },
+              "regret_per_run": {
+                "mean": 3.477777777777778,
+                "std": 2.339304528917162
+              }
+            },
+            "val": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.5,
+                "std": 0.4472135954999579
+              },
+              "regret_per_run": {
+                "mean": 0.888888888888889,
+                "std": 0.7950463919999253
+              }
+            },
+            "unseen_p2": {
+              "f1": {
+                "mean": 0.95,
+                "std": 0.04082482904638632
+              },
+              "precision": {
+                "mean": 0.95,
+                "std": 0.04082482904638632
+              },
+              "recall": {
+                "mean": 0.95,
+                "std": 0.04082482904638632
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.4515151515151515,
+                "std": 0.4159801506884174
+              },
+              "regret_per_run": {
+                "mean": 1.6037037037037039,
+                "std": 0.8026533501759627
+              }
+            },
+            "final_test": {
+              "f1": {
+                "mean": 0.9,
+                "std": 0.08164965809277258
+              },
+              "precision": {
+                "mean": 0.9,
+                "std": 0.08164965809277258
+              },
+              "recall": {
+                "mean": 0.9,
+                "std": 0.08164965809277258
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.51,
+                "std": 0.4903060268852505
+              },
+              "regret_per_run": {
+                "mean": 2.496296296296297,
+                "std": 1.3392051775379983
+              }
+            }
+          }
+        }
+      }
+    },
+    "no_revisit_anomaly": {
+      "name": "Revisit / Anomaly Feature Ablation",
+      "input_dim": 7,
+      "retained_features": [
+        "proxy_return",
+        "proxy_return_smoothed",
+        "proxy_return_trend",
+        "episode_length",
+        "action_distribution_change",
+        "state_visitation_entropy",
+        "state_visitation_change"
+      ],
+      "removed_features": [
+        "path_efficiency",
+        "revisit_rate",
+        "behavioral_dispersion"
+      ],
+      "description": "Removes rollout path efficiency, state revisitation rate, and probe entropy dispersion.",
+      "detectors": {
+        "lstm": {
+          "seed_runs": [
+            {
+              "seed": 0,
+              "best_val_f1": 1.0,
+              "selected_episode": 70,
+              "train_wall_s": 4.941567399997439,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 0.0
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 0.0
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 8,
+                    "EARLY": 4,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.6666666666666666,
+                  "recall": 0.6666666666666666,
+                  "f1": 0.6666666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.3333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 5.555555555555555
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 8,
+                    "EARLY": 4,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.6666666666666666,
+                  "recall": 0.6666666666666666,
+                  "f1": 0.6666666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.3333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 5.555555555555555
+                }
+              }
+            },
+            {
+              "seed": 1,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 5.407552399999986,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9166666666666666,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9166666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.2727272727272727,
+                  "std_delay_ckpts": 0.4453617714151233,
+                  "eval_regret_per_run": 1.8333333333333333
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                }
+              }
+            },
+            {
+              "seed": 2,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 5.313858599998639,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.3333333333333333,
+                  "std_delay_ckpts": 0.4714045207910317,
+                  "eval_regret_per_run": 0.5925925925925929
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.4166666666666667,
+                  "std_delay_ckpts": 0.4930066485916347,
+                  "eval_regret_per_run": 0.740740740740741
+                }
+              }
+            },
+            {
+              "seed": 3,
+              "best_val_f1": 1.0,
+              "selected_episode": 80,
+              "train_wall_s": 5.329569199999241,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 1.333333333333334
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5833333333333334,
+                  "std_delay_ckpts": 0.4930066485916347,
+                  "eval_regret_per_run": 1.0370370370370374
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5833333333333334,
+                  "std_delay_ckpts": 0.6400954789890506,
+                  "eval_regret_per_run": 1.0370370370370374
+                }
+              }
+            },
+            {
+              "seed": 4,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 5.344612500000949,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 1,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9166666666666666,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9166666666666666,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.2727272727272727,
+                  "std_delay_ckpts": 0.4453617714151233,
+                  "eval_regret_per_run": 1.8333333333333333
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.4166666666666667,
+                  "std_delay_ckpts": 0.4930066485916347,
+                  "eval_regret_per_run": 0.740740740740741
+                }
+              }
+            }
+          ],
+          "summary": {
+            "train": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.45,
+                "std": 0.2449489742783178
+              },
+              "regret_per_run": {
+                "mean": 0.8000000000000004,
+                "std": 0.4354648431614541
+              }
+            },
+            "val": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.8,
+                "std": 0.4000000000000001
+              },
+              "regret_per_run": {
+                "mean": 1.422222222222223,
+                "std": 0.7111111111111115
+              }
+            },
+            "unseen_p2": {
+              "f1": {
+                "mean": 0.9,
+                "std": 0.12247448713915891
+              },
+              "precision": {
+                "mean": 0.9,
+                "std": 0.12247448713915891
+              },
+              "recall": {
+                "mean": 0.9,
+                "std": 0.12247448713915891
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.2924242424242424,
+                "std": 0.18578995219356767
+              },
+              "regret_per_run": {
+                "mean": 2.1703703703703705,
+                "std": 1.7584364547609044
+              }
+            },
+            "final_test": {
+              "f1": {
+                "mean": 0.9333333333333332,
+                "std": 0.13333333333333336
+              },
+              "precision": {
+                "mean": 0.9333333333333332,
+                "std": 0.13333333333333336
+              },
+              "recall": {
+                "mean": 0.9333333333333332,
+                "std": 0.13333333333333336
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.38333333333333336,
+                "std": 0.20138409955990955
+              },
+              "regret_per_run": {
+                "mean": 1.7925925925925927,
+                "std": 1.8846866837083553
+              }
+            }
+          }
+        },
+        "mlp": {
+          "seed_runs": [
+            {
+              "seed": 0,
+              "best_val_f1": 1.0,
+              "selected_episode": 70,
+              "train_wall_s": 2.7106587999987823,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 2,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8333333333333334,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8333333333333334,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.8,
+                  "std_delay_ckpts": 0.7483314773547883,
+                  "eval_regret_per_run": 3.9629629629629637
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 9,
+                    "EARLY": 2,
+                    "FN": 1,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8181818181818182,
+                  "recall": 0.75,
+                  "f1": 0.7826086956521738,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.08333333333333333,
+                  "mean_delay_ckpts": 0.6666666666666666,
+                  "std_delay_ckpts": 0.6666666666666666,
+                  "eval_regret_per_run": 5.555555555555557
+                }
+              }
+            },
+            {
+              "seed": 1,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 2.94283329999962,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.75,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 1.333333333333334
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 1,
+                    "FN": 1,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.9090909090909091,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8695652173913043,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.08333333333333333,
+                  "miss_rate": 0.08333333333333333,
+                  "mean_delay_ckpts": 0.6,
+                  "std_delay_ckpts": 0.66332495807108,
+                  "eval_regret_per_run": 4.1111111111111125
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 8,
+                    "EARLY": 2,
+                    "FN": 2,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8,
+                  "recall": 0.6666666666666666,
+                  "f1": 0.7272727272727272,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.16666666666666666,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 7.148148148148149
+                }
+              }
+            },
+            {
+              "seed": 2,
+              "best_val_f1": 1.0,
+              "selected_episode": 130,
+              "train_wall_s": 2.9649423000009847,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.25,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 0.44444444444444464
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 0.8888888888888893
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 9,
+                    "EARLY": 3,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.75,
+                  "recall": 0.75,
+                  "f1": 0.75,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.25,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.3333333333333333,
+                  "std_delay_ckpts": 0.4714045207910317,
+                  "eval_regret_per_run": 4.611111111111111
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 2,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 0.8333333333333334,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.8333333333333334,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.16666666666666666,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 0.5,
+                  "std_delay_ckpts": 0.6708203932499369,
+                  "eval_regret_per_run": 3.5185185185185186
+                }
+              }
+            },
+            {
+              "seed": 3,
+              "best_val_f1": 1.0,
+              "selected_episode": 70,
+              "train_wall_s": 2.649398599998676,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 0,
+                    "FN": 1,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9565217391304348,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.08333333333333333,
+                  "mean_delay_ckpts": 1.1818181818181819,
+                  "std_delay_ckpts": 0.38569460791993504,
+                  "eval_regret_per_run": 3.7592592592592613
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 10,
+                    "EARLY": 0,
+                    "FN": 2,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.8333333333333334,
+                  "f1": 0.9090909090909091,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.16666666666666666,
+                  "mean_delay_ckpts": 1.1,
+                  "std_delay_ckpts": 0.3,
+                  "eval_regret_per_run": 5.407407407407409
+                }
+              }
+            },
+            {
+              "seed": 4,
+              "best_val_f1": 1.0,
+              "selected_episode": 60,
+              "train_wall_s": 2.902936200000113,
+              "eval": {
+                "train": {
+                  "n_runs": 6,
+                  "n_hack": 4,
+                  "n_clean": 2,
+                  "counts": {
+                    "TP": 4,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 2,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.0,
+                  "eval_regret_per_run": 1.7777777777777786
+                },
+                "val": {
+                  "n_runs": 3,
+                  "n_hack": 2,
+                  "n_clean": 1,
+                  "counts": {
+                    "TP": 2,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 1,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.5,
+                  "std_delay_ckpts": 0.5,
+                  "eval_regret_per_run": 2.6666666666666674
+                },
+                "unseen_p2": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 12,
+                    "EARLY": 0,
+                    "FN": 0,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 1.0,
+                  "f1": 1.0,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.0,
+                  "mean_delay_ckpts": 1.25,
+                  "std_delay_ckpts": 0.4330127018922193,
+                  "eval_regret_per_run": 2.222222222222223
+                },
+                "final_test": {
+                  "n_runs": 18,
+                  "n_hack": 12,
+                  "n_clean": 6,
+                  "counts": {
+                    "TP": 11,
+                    "EARLY": 0,
+                    "FN": 1,
+                    "TN": 6,
+                    "FP": 0
+                  },
+                  "precision": 1.0,
+                  "recall": 0.9166666666666666,
+                  "f1": 0.9565217391304348,
+                  "clean_fpr": 0.0,
+                  "premature_rate": 0.0,
+                  "miss_rate": 0.08333333333333333,
+                  "mean_delay_ckpts": 1.0,
+                  "std_delay_ckpts": 0.4264014327112209,
+                  "eval_regret_per_run": 3.518518518518521
+                }
+              }
+            }
+          ],
+          "summary": {
+            "train": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.7,
+                "std": 0.291547594742265
+              },
+              "regret_per_run": {
+                "mean": 1.244444444444445,
+                "std": 0.5183068350973603
+              }
+            },
+            "val": {
+              "f1": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "precision": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "recall": {
+                "mean": 1.0,
+                "std": 0.0
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.9,
+                "std": 0.48989794855663565
+              },
+              "regret_per_run": {
+                "mean": 1.6000000000000008,
+                "std": 0.870929686322908
+              }
+            },
+            "unseen_p2": {
+              "f1": {
+                "mean": 0.8818840579710144,
+                "std": 0.08879694888139357
+              },
+              "precision": {
+                "mean": 0.8984848484848484,
+                "std": 0.09696969696969696
+              },
+              "recall": {
+                "mean": 0.8666666666666668,
+                "std": 0.08498365855987973
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.833030303030303,
+                "std": 0.3465856018802142
+              },
+              "regret_per_run": {
+                "mean": 3.7333333333333343,
+                "std": 0.8062342819684142
+              }
+            },
+            "final_test": {
+              "f1": {
+                "mean": 0.8417654808959156,
+                "std": 0.08292277017893017
+              },
+              "precision": {
+                "mean": 0.8903030303030303,
+                "std": 0.0901870314557007
+              },
+              "recall": {
+                "mean": 0.8,
+                "std": 0.08498365855987976
+              },
+              "clean_fpr": {
+                "mean": 0.0,
+                "std": 0.0
+              },
+              "delay_ckpts": {
+                "mean": 0.7533333333333333,
+                "std": 0.25174943451332277
+              },
+              "regret_per_run": {
+                "mean": 5.02962962962963,
+                "std": 1.3765426562585388
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
