@@ -1,0 +1,5 @@
+detector_name,split,total_runs,clean_runs,hacking_runs,tp,fp,tn,fn,precision,recall,f1_score,clean_fp_rate,clean_flagged_pct,hacking_detected_pct,mean_delay_ckpts,mean_delay_steps
+LSTM-DQN,all,12,4,8,8,0,4,0,1.0,1.0,1.0,0.0,0.0,100.0,0.25,1250.0
+Mathematical-O1,all,12,4,8,3,0,4,5,1.0,0.375,0.5454545454545454,0.0,0.0,37.5,0.0,0.0
+Mathematical-O2,all,12,4,8,8,0,4,0,1.0,1.0,1.0,0.0,0.0,100.0,0.0,0.0
+Mathematical-O1&O2,all,12,4,8,3,0,4,5,1.0,0.375,0.5454545454545454,0.0,0.0,37.5,0.0,0.0
