@@ -9,22 +9,22 @@ A research framework designed to study **reward hacking (specification gaming)**
 
 ---
 
-## 📌 Mid-Review Highlights
+##  Mid-Review Highlights
 
-* 📖 **Comprehensive Mid-Review Audit:** Detailed technical dossier, empirical findings, and mathematical formulation available at **[`docs/MID_REVIEW_AUDIT.md`](docs/MID_REVIEW_AUDIT.md)**.
-* 👥 **Clear Division of Duties:**
+*  **Comprehensive Mid-Review Audit:** Detailed technical dossier, empirical findings, and mathematical formulation available at **[`docs/MID_REVIEW_AUDIT.md`](docs/MID_REVIEW_AUDIT.md)**.
+* **Clear Division of Duties:**
   * **Person 1 (Adrija):** Initial 5×5 coin-respawn GridWorld prototype & baseline measurement scripts (`baselines/gridworld/`).
   * **Person 2 (Sabari):** Modular architecture (`rhd/`), `RegionToggleEnv` with strict reward quarantine, probe-state feature extraction engine, formal $O_1$/$O_2$ onset detection algorithms, multi-condition pilot sweeps, and the 27-test automated test suite.
   * **Person 3 (Anjali):** Energy-harvesting Battery Collector baseline environment (`baselines/battery_collector/`) and cross-environment data merger (`scripts/combine_metrics.py`).
-* 🧪 **Empirical Findings:**
+* **Empirical Findings:**
   * **Control ($w=0.0$):** Zero hacking, 100% goal success, 0 false positive onsets.
   * **Exploit ($w=1.0, 5.0$):** Maximum exploit oscillation (50 entries/episode), sustained proxy returns, $O_2$ onset confirmed at step 15,000.
   * **Combined Baseline Dataset:** 280 standardized evaluation rows spanning both GridWorld and Battery Collector in `results/combined_metrics.csv`.
-* ✅ **Verification:** 27 automated unit tests passing (100% pass rate).
+*  **Verification:** 27 automated unit tests passing (100% pass rate).
 
 ---
 
-## 🚀 Quickstart
+##  Quickstart
 
 ### 1. Environment Setup
 ```bash
@@ -61,7 +61,7 @@ python run_all.py --all
 
 ---
 
-## 📂 Repository Structure
+##  Repository Structure
 
 ```text
 Reward-Hacking-onset-Detection/
@@ -85,7 +85,7 @@ Reward-Hacking-onset-Detection/
 
 ---
 
-## 📊 Feature Extraction & Onset Detection
+##  Feature Extraction & Onset Detection
 
 The detector pipeline monitors policy checkpoints across training **without observing the true reward**:
 1. **Total Variation Distance (TVD) / JSD on Probe States:** Tracks abrupt reorganizations in action preferences.
