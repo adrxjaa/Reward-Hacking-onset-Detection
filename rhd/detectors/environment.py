@@ -92,10 +92,12 @@ class Normalizer:
         return (features - self.mean) / self.std
 
     def to_dict(self) -> Dict[str, Any]:
+        from rhd.detectors.features import IMPROVED_FEATURE_NAMES
+        names = IMPROVED_FEATURE_NAMES if (self.mean is not None and len(self.mean) == len(IMPROVED_FEATURE_NAMES)) else FEATURE_NAMES
         return {
             "mean": self.mean.tolist() if self.mean is not None else [],
             "std": self.std.tolist() if self.std is not None else [],
-            "feature_names": FEATURE_NAMES,
+            "feature_names": names,
         }
 
     @classmethod
@@ -136,6 +138,7 @@ class DetectorEpisode:
 def load_episode_from_run(
     run_dir: str,
     use_independent_ground_truth: bool = True,
+    feature_mode: str = "original",
 ) -> Optional[DetectorEpisode]:
     """
     Load temporal features and onset metadata from a completed generator run directory.
@@ -167,15 +170,26 @@ def load_episode_from_run(
 
     steps = [int(r["environment_steps"]) for r in records]
     ckpt_ids = [str(r.get("checkpoint_id", f"step_{s}")) for r, s in zip(records, steps)]
-    raw_feats = np.array([extract_feature_vector(r) for r in records], dtype=np.float32)
+
+    if feature_mode == "improved":
+        from rhd.detectors.features import extract_improved_features_from_records
+        raw_feats = extract_improved_features_from_records(records)
+    else:
+        raw_feats = np.array([extract_feature_vector(r) for r in records], dtype=np.float32)
 
     # Determine ground-truth onset
     onset_step = None
-    if use_independent_ground_truth and os.path.exists(off_path):
-        from rhd.detectors.ground_truth import get_run_ground_truth_onset
-        onset_step = get_run_ground_truth_onset(run_dir)
+    if use_independent_ground_truth:
+        if os.path.exists(off_path):
+            from rhd.detectors.ground_truth import get_run_ground_truth_onset
+            onset_step = get_run_ground_truth_onset(run_dir)
+        else:
+            raise FileNotFoundError(
+                f"Independent ground truth requested for run '{run_dir}', but offline evaluation log '{off_path}' was not found. "
+                "Refusing silent fallback to O1/O2 onset metadata to prevent circular ground-truth leakage."
+            )
     elif os.path.exists(onset_path):
-        # Fallback to onset.json if requested
+        # Fallback to onset.json only when use_independent_ground_truth is explicitly False
         with open(onset_path, "r") as f:
             onset_data = json.load(f)
 

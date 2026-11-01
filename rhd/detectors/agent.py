@@ -7,7 +7,12 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
-from rhd.detectors.models import LSTMQNetwork, MLPQNetwork
+from rhd.detectors.models import (
+    LSTMQNetwork,
+    MLPQNetwork,
+    ImprovedLSTMQNetwork,
+    ImprovedMLPQNetwork,
+)
 from rhd.detectors.replay_buffer import ReplayBuffer
 
 
@@ -17,15 +22,20 @@ class DQNConfig:
     hidden_dim: int = 64
     num_layers: int = 1
     num_actions: int = 2
-    model_type: str = "lstm"  # "lstm" or "mlp"
+    model_type: str = "lstm"  # "lstm", "mlp", "improved_lstm", "improved_mlp"
+    window_size: int = 4
+    dropout: float = 0.0
     learning_rate: float = 1e-3
     gamma: float = 0.95
     batch_size: int = 32
     target_update_freq: int = 20
+    soft_target_tau: Optional[float] = None
     epsilon_start: float = 1.0
     epsilon_min: float = 0.05
     epsilon_decay: float = 0.99
     grad_norm_clip: float = 5.0
+    decision_threshold: float = 0.0
+    balanced_sampling: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -33,7 +43,8 @@ class DQNConfig:
 
 class DQNAgent:
     """
-    DQN Agent supporting recurrent LSTM or feed-forward MLP Q-networks.
+    DQN Agent supporting recurrent LSTM or feed-forward MLP Q-networks,
+    including improved dueling and sequence-aggregation variants.
     """
 
     def __init__(
@@ -59,6 +70,36 @@ class DQNAgent:
                 input_dim=self.config.input_dim,
                 hidden_dim=self.config.hidden_dim,
                 num_actions=self.config.num_actions,
+            ).to(self.device)
+        elif self.config.model_type == "improved_mlp":
+            self.online_net = ImprovedMLPQNetwork(
+                input_dim=self.config.input_dim,
+                window_size=self.config.window_size,
+                hidden_dim=self.config.hidden_dim,
+                num_actions=self.config.num_actions,
+            ).to(self.device)
+
+            self.target_net = ImprovedMLPQNetwork(
+                input_dim=self.config.input_dim,
+                window_size=self.config.window_size,
+                hidden_dim=self.config.hidden_dim,
+                num_actions=self.config.num_actions,
+            ).to(self.device)
+        elif self.config.model_type == "improved_lstm":
+            self.online_net = ImprovedLSTMQNetwork(
+                input_dim=self.config.input_dim,
+                hidden_dim=self.config.hidden_dim,
+                num_layers=self.config.num_layers,
+                num_actions=self.config.num_actions,
+                dropout=self.config.dropout,
+            ).to(self.device)
+
+            self.target_net = ImprovedLSTMQNetwork(
+                input_dim=self.config.input_dim,
+                hidden_dim=self.config.hidden_dim,
+                num_layers=self.config.num_layers,
+                num_actions=self.config.num_actions,
+                dropout=self.config.dropout,
             ).to(self.device)
         else:
             self.online_net = LSTMQNetwork(
@@ -94,7 +135,7 @@ class DQNAgent:
         deterministic: bool = False,
     ) -> int:
         """
-        Select action via epsilon-greedy policy.
+        Select action via epsilon-greedy policy, optionally applying a confidence threshold.
         state_window: shape (window_size, input_dim)
         """
         if not deterministic and random.random() < self.epsilon:
@@ -107,6 +148,12 @@ class DQNAgent:
                 device=self.device,
             ).unsqueeze(0)  # Add batch dim -> (1, W, D)
             q_vals = self.online_net(s_tensor)
+
+            # Confidence-based threshold for FLAG action (action 1)
+            if deterministic and self.config.decision_threshold > 0.0:
+                q_diff = float((q_vals[0, 1] - q_vals[0, 0]).item())
+                return 1 if q_diff >= self.config.decision_threshold else 0
+
             action = int(torch.argmax(q_vals, dim=-1).item())
             return action
 
@@ -130,10 +177,17 @@ class DQNAgent:
         if len(replay_buffer) < self.config.batch_size:
             return None
 
-        states, actions, rewards, next_states, dones = replay_buffer.sample(
-            self.config.batch_size,
-            device=self.device,
-        )
+        if self.config.balanced_sampling and hasattr(replay_buffer, "sample_balanced"):
+            states, actions, rewards, next_states, dones = replay_buffer.sample_balanced(
+                self.config.batch_size,
+                flag_ratio=0.25,
+                device=self.device,
+            )
+        else:
+            states, actions, rewards, next_states, dones = replay_buffer.sample(
+                self.config.batch_size,
+                device=self.device,
+            )
 
         # Compute Q(s, a) using online net
         q_eval = self.online_net(states).gather(1, actions)
@@ -157,8 +211,13 @@ class DQNAgent:
 
         self.update_count += 1
 
-        # Synchronize target network
-        if self.update_count % self.config.target_update_freq == 0:
+        # Synchronize target network (soft Polyak update or hard periodic update)
+        if self.config.soft_target_tau is not None and self.config.soft_target_tau > 0.0:
+            tau = self.config.soft_target_tau
+            with torch.no_grad():
+                for target_param, online_param in zip(self.target_net.parameters(), self.online_net.parameters()):
+                    target_param.data.copy_(tau * online_param.data + (1.0 - tau) * target_param.data)
+        elif self.update_count % self.config.target_update_freq == 0:
             self.target_net.load_state_dict(self.online_net.state_dict())
 
         # Decay epsilon
