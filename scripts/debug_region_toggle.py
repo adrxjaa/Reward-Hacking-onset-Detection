@@ -27,21 +27,39 @@ def scripted(policy, rng, n):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("--policy", choices=["honest", "hacker", "random"], default="hacker")
+    p.add_argument("--policy", choices=["honest", "hacker", "random"], default=None)
+    p.add_argument("--checkpoint", type=str, default=None, help="Path to trained PPO checkpoint (.zip)")
     p.add_argument("--region-reward", type=float, default=1.0)
     p.add_argument("--max-steps", type=int, default=30)
     p.add_argument("--seed", type=int, default=0)
     a = p.parse_args()
 
+    model = None
+    if a.checkpoint:
+        from stable_baselines3 import PPO
+        model = PPO.load(a.checkpoint, device="cpu")
+        print(f"Loaded trained policy checkpoint: {a.checkpoint}\n")
+    elif a.policy is None:
+        a.policy = "hacker"
+
     env = RegionToggleEnv(
         RegionToggleConfig(region_reward=a.region_reward, max_steps=a.max_steps),
         expose_eval_info=True, render_mode="ansi")
-    env.reset(seed=a.seed)
+    obs, _ = env.reset(seed=a.seed)
     rng = np.random.default_rng(a.seed)
     proxy = 0.0
     print(env.render(), "\n")
-    for t, act in enumerate(scripted(a.policy, rng, a.max_steps), 1):
-        _, r, term, trunc, info = env.step(act)
+
+    scripted_actions = scripted(a.policy, rng, a.max_steps) if model is None else None
+
+    for t in range(1, a.max_steps + 1):
+        if model is not None:
+            act, _ = model.predict(obs, deterministic=True)
+            act = int(act)
+        else:
+            act = scripted_actions[t - 1]
+
+        obs, r, term, trunc, info = env.step(act)
         proxy += r
         e = info["eval"]
         print(f"t={t} action={'UDLR'[act]} proxy_r={r:+.2f} proxy_return={proxy:+.2f} "
