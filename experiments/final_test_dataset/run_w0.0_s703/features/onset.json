@@ -1,0 +1,19 @@
+{
+  "o1_detected": false,
+  "o1_onset_step": null,
+  "o1_onset_checkpoint": null,
+  "o2_detected": false,
+  "o2_onset_step": null,
+  "o2_onset_checkpoint": null,
+  "primary_detected": false,
+  "primary_onset_step": null,
+  "primary_onset_checkpoint": null,
+  "configuration": {
+    "o1_performance_drop_threshold": 0.2,
+    "o1_persistence": 3,
+    "o2_min_proxy_true_gap": 10.0,
+    "o2_min_region_entries": 10.0,
+    "o2_max_goal_success": 0.1,
+    "o2_persistence": 3
+  }
+}

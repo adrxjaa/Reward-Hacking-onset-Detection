@@ -62,3 +62,47 @@ class LSTMQNetwork(nn.Module):
         # Compute Q-values for all actions
         q_values = self.q_head(last_hidden)
         return q_values
+
+
+class MLPQNetwork(nn.Module):
+    """
+    Ablation baseline: Non-recurrent feed-forward Q-Network without an LSTM sequence encoder.
+    Operates strictly on the current checkpoint feature vector, ablating temporal recurrence.
+    """
+
+    def __init__(
+        self,
+        input_dim: int = 10,
+        hidden_dim: int = 64,
+        num_actions: int = 2,
+    ):
+        super().__init__()
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.num_actions = num_actions
+
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.LayerNorm(hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 64),
+            nn.LayerNorm(64),
+            nn.ReLU(),
+            nn.Linear(64, num_actions),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if x.dim() == 2:
+            if x.shape[-1] == self.input_dim and x.shape[0] > 1:
+                # (W, D) single window -> take last frame
+                x = x[-1:, :]
+            elif x.shape[-1] == self.input_dim and x.shape[0] == 1:
+                pass
+            else:
+                x = x.unsqueeze(0)
+        elif x.dim() == 3:
+            # (B, W, D) batched windows -> extract current (last) frame
+            x = x[:, -1, :]
+
+        return self.net(x)
+

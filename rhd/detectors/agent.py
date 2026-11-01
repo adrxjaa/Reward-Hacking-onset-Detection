@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 
-from rhd.detectors.models import LSTMQNetwork
+from rhd.detectors.models import LSTMQNetwork, MLPQNetwork
 from rhd.detectors.replay_buffer import ReplayBuffer
 
 
@@ -17,6 +17,7 @@ class DQNConfig:
     hidden_dim: int = 64
     num_layers: int = 1
     num_actions: int = 2
+    model_type: str = "lstm"  # "lstm" or "mlp"
     learning_rate: float = 1e-3
     gamma: float = 0.95
     batch_size: int = 32
@@ -32,7 +33,7 @@ class DQNConfig:
 
 class DQNAgent:
     """
-    DQN Agent using an LSTM sequential encoder for Q-value estimation.
+    DQN Agent supporting recurrent LSTM or feed-forward MLP Q-networks.
     """
 
     def __init__(
@@ -47,19 +48,32 @@ class DQNAgent:
             self.device = torch.device(device)
 
         # Networks
-        self.online_net = LSTMQNetwork(
-            input_dim=self.config.input_dim,
-            hidden_dim=self.config.hidden_dim,
-            num_layers=self.config.num_layers,
-            num_actions=self.config.num_actions,
-        ).to(self.device)
+        if self.config.model_type == "mlp":
+            self.online_net = MLPQNetwork(
+                input_dim=self.config.input_dim,
+                hidden_dim=self.config.hidden_dim,
+                num_actions=self.config.num_actions,
+            ).to(self.device)
 
-        self.target_net = LSTMQNetwork(
-            input_dim=self.config.input_dim,
-            hidden_dim=self.config.hidden_dim,
-            num_layers=self.config.num_layers,
-            num_actions=self.config.num_actions,
-        ).to(self.device)
+            self.target_net = MLPQNetwork(
+                input_dim=self.config.input_dim,
+                hidden_dim=self.config.hidden_dim,
+                num_actions=self.config.num_actions,
+            ).to(self.device)
+        else:
+            self.online_net = LSTMQNetwork(
+                input_dim=self.config.input_dim,
+                hidden_dim=self.config.hidden_dim,
+                num_layers=self.config.num_layers,
+                num_actions=self.config.num_actions,
+            ).to(self.device)
+
+            self.target_net = LSTMQNetwork(
+                input_dim=self.config.input_dim,
+                hidden_dim=self.config.hidden_dim,
+                num_layers=self.config.num_layers,
+                num_actions=self.config.num_actions,
+            ).to(self.device)
 
         self.target_net.load_state_dict(self.online_net.state_dict())
         self.target_net.eval()
@@ -168,6 +182,35 @@ class DQNAgent:
 
     def load(self, filepath: str):
         checkpoint = torch.load(filepath, map_location=self.device)
+        saved_cfg = checkpoint.get("config", {})
+        saved_type = saved_cfg.get("model_type", "lstm")
+        if saved_type != self.config.model_type:
+            self.config.model_type = saved_type
+            if saved_type == "mlp":
+                self.online_net = MLPQNetwork(
+                    input_dim=self.config.input_dim,
+                    hidden_dim=self.config.hidden_dim,
+                    num_actions=self.config.num_actions,
+                ).to(self.device)
+                self.target_net = MLPQNetwork(
+                    input_dim=self.config.input_dim,
+                    hidden_dim=self.config.hidden_dim,
+                    num_actions=self.config.num_actions,
+                ).to(self.device)
+            else:
+                self.online_net = LSTMQNetwork(
+                    input_dim=self.config.input_dim,
+                    hidden_dim=self.config.hidden_dim,
+                    num_layers=self.config.num_layers,
+                    num_actions=self.config.num_actions,
+                ).to(self.device)
+                self.target_net = LSTMQNetwork(
+                    input_dim=self.config.input_dim,
+                    hidden_dim=self.config.hidden_dim,
+                    num_layers=self.config.num_layers,
+                    num_actions=self.config.num_actions,
+                ).to(self.device)
+
         self.online_net.load_state_dict(checkpoint["online_net"])
         self.target_net.load_state_dict(checkpoint["target_net"])
         self.optimizer.load_state_dict(checkpoint["optimizer"])

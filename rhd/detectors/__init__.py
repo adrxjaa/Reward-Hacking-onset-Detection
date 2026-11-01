@@ -2,7 +2,7 @@
 rhd.detectors - Learned Sequential Detectors for Reward Hacking Onset Detection
 """
 
-from rhd.detectors.models import LSTMQNetwork
+from rhd.detectors.models import LSTMQNetwork, MLPQNetwork
 from rhd.detectors.replay_buffer import ReplayBuffer
 from rhd.detectors.environment import (
     DetectorRewardConfig,
@@ -17,6 +17,7 @@ from rhd.detectors.evaluator import DetectorEvaluator, EvaluationResult
 
 __all__ = [
     "LSTMQNetwork",
+    "MLPQNetwork",
     "ReplayBuffer",
     "DetectorRewardConfig",
     "DetectorEpisode",

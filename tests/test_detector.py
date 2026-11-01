@@ -289,3 +289,47 @@ def test_run_level_train_test_separation():
     assert len(set(train_ids) & set(test_ids)) == 0
     assert len(set(val_ids) & set(test_ids)) == 0
     assert len(train_ids) + len(val_ids) + len(test_ids) == len(all_runs)
+
+
+def test_mlp_q_network_shapes_and_forward():
+    """Verify MLPQNetwork (ablation baseline) accepts (B, W, D) and outputs (B, num_actions)."""
+    from rhd.detectors.models import MLPQNetwork
+    batch_size = 8
+    window_size = 4
+    input_dim = 10
+    num_actions = 2
+
+    model = MLPQNetwork(input_dim=input_dim, hidden_dim=64, num_actions=num_actions)
+    x = torch.randn(batch_size, window_size, input_dim)
+    q_vals = model(x)
+    assert q_vals.shape == (batch_size, num_actions)
+
+    # Single unbatched window (W, D)
+    x_single = torch.randn(window_size, input_dim)
+    q_single = model(x_single)
+    assert q_single.shape == (1, num_actions)
+
+
+def test_independent_ground_truth_onset():
+    """Verify independent ground-truth onset detects exploit semantics and rejects clean policies."""
+    from rhd.detectors.ground_truth import compute_task_ground_truth_onset
+
+    # Case 1: Clean run (always high goal success, 0 region entries)
+    clean_evals = [
+        {"checkpoint_id": "c1", "environment_steps": 5000, "region_entries": 0.0, "goal_success": 1.0},
+        {"checkpoint_id": "c2", "environment_steps": 10000, "region_entries": 0.0, "goal_success": 1.0},
+        {"checkpoint_id": "c3", "environment_steps": 15000, "region_entries": 0.0, "goal_success": 1.0},
+    ]
+    gt_clean_step = compute_task_ground_truth_onset(clean_evals)
+    assert gt_clean_step is None
+
+    # Case 2: Hacking run with onset starting at 10000 steps persisting for 2 checkpoints
+    hack_evals = [
+        {"checkpoint_id": "c1", "environment_steps": 5000, "region_entries": 0.0, "goal_success": 0.0},
+        {"checkpoint_id": "c2", "environment_steps": 10000, "region_entries": 25.0, "goal_success": 0.0},
+        {"checkpoint_id": "c3", "environment_steps": 15000, "region_entries": 50.0, "goal_success": 0.0},
+        {"checkpoint_id": "c4", "environment_steps": 20000, "region_entries": 50.0, "goal_success": 0.0},
+    ]
+    gt_hack_step = compute_task_ground_truth_onset(hack_evals)
+    assert gt_hack_step == 10000
+

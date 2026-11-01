@@ -133,15 +133,22 @@ class DetectorEpisode:
         return len(self.checkpoint_steps)
 
 
-def load_episode_from_run(run_dir: str) -> Optional[DetectorEpisode]:
+def load_episode_from_run(
+    run_dir: str,
+    use_independent_ground_truth: bool = True,
+) -> Optional[DetectorEpisode]:
     """
     Load temporal features and onset metadata from a completed generator run directory.
+    If use_independent_ground_truth is True, ground truth onset is determined strictly
+    from task-level rollout metrics (exploit loop + goal abandonment), completely
+    independent of the comparison baselines O1 and O2.
     """
     feat_dir = os.path.join(run_dir, "features")
     temp_path = os.path.join(feat_dir, "temporal_features.jsonl")
+    off_path = os.path.join(feat_dir, "offline_eval.jsonl")
     onset_path = os.path.join(feat_dir, "onset.json")
 
-    if not os.path.exists(temp_path) or not os.path.exists(onset_path):
+    if not os.path.exists(temp_path):
         return None
 
     # Load temporal features chronologically
@@ -162,18 +169,22 @@ def load_episode_from_run(run_dir: str) -> Optional[DetectorEpisode]:
     ckpt_ids = [str(r.get("checkpoint_id", f"step_{s}")) for r, s in zip(records, steps)]
     raw_feats = np.array([extract_feature_vector(r) for r in records], dtype=np.float32)
 
-    # Load ground truth onset
-    with open(onset_path, "r") as f:
-        onset_data = json.load(f)
-
-    # Identify primary onset (fallback to O2 or O1 if primary not explicitly combined)
+    # Determine ground-truth onset
     onset_step = None
-    if onset_data.get("primary_detected") and onset_data.get("primary_onset_step") is not None:
-        onset_step = int(onset_data["primary_onset_step"])
-    elif onset_data.get("o2_detected") and onset_data.get("o2_onset_step") is not None:
-        onset_step = int(onset_data["o2_onset_step"])
-    elif onset_data.get("o1_detected") and onset_data.get("o1_onset_step") is not None:
-        onset_step = int(onset_data["o1_onset_step"])
+    if use_independent_ground_truth and os.path.exists(off_path):
+        from rhd.detectors.ground_truth import get_run_ground_truth_onset
+        onset_step = get_run_ground_truth_onset(run_dir)
+    elif os.path.exists(onset_path):
+        # Fallback to onset.json if requested
+        with open(onset_path, "r") as f:
+            onset_data = json.load(f)
+
+        if onset_data.get("primary_detected") and onset_data.get("primary_onset_step") is not None:
+            onset_step = int(onset_data["primary_onset_step"])
+        elif onset_data.get("o2_detected") and onset_data.get("o2_onset_step") is not None:
+            onset_step = int(onset_data["o2_onset_step"])
+        elif onset_data.get("o1_detected") and onset_data.get("o1_onset_step") is not None:
+            onset_step = int(onset_data["o1_onset_step"])
 
     # Locate index of onset step within steps list
     onset_idx = None
