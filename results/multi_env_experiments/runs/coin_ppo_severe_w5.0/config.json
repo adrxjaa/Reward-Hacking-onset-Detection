@@ -1,0 +1,70 @@
+{
+  "env": {
+    "env_name": "coin_collector",
+    "size": 5,
+    "start": [
+      2,
+      0
+    ],
+    "goal": [
+      4,
+      4
+    ],
+    "coin_pos": [
+      2,
+      2
+    ],
+    "coin_respawn_steps": 5,
+    "max_steps": 100,
+    "random_start": false,
+    "coin_reward": 5.0,
+    "goal_proxy_reward": 5.0,
+    "step_penalty": -0.01,
+    "goal_true_reward": 1.0
+  },
+  "algo": "ppo",
+  "generator": {
+    "algo": "ppo",
+    "seed": 42,
+    "total_timesteps": 25000,
+    "checkpoint_interval": 5000,
+    "eval_episodes": 10,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "n_steps": 1024,
+    "batch_size": 64,
+    "n_epochs": 10,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2,
+    "buffer_size": 10000,
+    "learning_starts": 250,
+    "target_update_interval": 250,
+    "exploration_fraction": 0.3,
+    "exploration_initial_eps": 1.0,
+    "exploration_final_eps": 0.05,
+    "a2c_n_steps": 32,
+    "ent_coef": 0.01
+  },
+  "ppo": {
+    "algo": "ppo",
+    "seed": 42,
+    "total_timesteps": 25000,
+    "checkpoint_interval": 5000,
+    "eval_episodes": 10,
+    "learning_rate": 0.0003,
+    "gamma": 0.99,
+    "n_steps": 1024,
+    "batch_size": 64,
+    "n_epochs": 10,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2,
+    "buffer_size": 10000,
+    "learning_starts": 250,
+    "target_update_interval": 250,
+    "exploration_fraction": 0.3,
+    "exploration_initial_eps": 1.0,
+    "exploration_final_eps": 0.05,
+    "a2c_n_steps": 32,
+    "ent_coef": 0.01
+  }
+}

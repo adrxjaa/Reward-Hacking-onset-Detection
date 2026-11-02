@@ -6,15 +6,22 @@ from typing import Dict, Any, List, Tuple
 import numpy as np
 import gymnasium as gym
 
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, A2C, DQN
 
-from rhd.envs.region_toggle import RegionToggleEnv, RegionToggleConfig
+from rhd.envs import (
+    RegionToggleEnv,
+    RegionToggleConfig,
+    CoinCollectorEnv,
+    CoinCollectorConfig,
+    BatteryCollectorEnv,
+    BatteryCollectorConfig,
+)
 
 @dataclass
 class ProbeStateConfig:
     states: List[Tuple[int, int]]
 
-def generate_probe_states(env_cfg: RegionToggleConfig) -> ProbeStateConfig:
+def generate_probe_states(env_cfg: Any) -> ProbeStateConfig:
     states = []
     for r in range(env_cfg.size):
         for c in range(env_cfg.size):
@@ -29,12 +36,55 @@ class PolicyAdapter:
         import torch
         obs_tensor = torch.as_tensor(obs).unsqueeze(0)
         with torch.no_grad():
-            dist = self.model.policy.get_distribution(obs_tensor)
-            probs = dist.distribution.probs.squeeze(0).cpu().numpy()
+            if hasattr(self.model, "policy") and hasattr(self.model.policy, "get_distribution"):
+                # PPO or A2C
+                dist = self.model.policy.get_distribution(obs_tensor)
+                probs = dist.distribution.probs.squeeze(0).cpu().numpy()
+            elif hasattr(self.model, "policy") and hasattr(self.model.policy, "q_net"):
+                # DQN
+                q_values = self.model.policy.q_net(obs_tensor)
+                probs = torch.softmax(q_values, dim=-1).squeeze(0).cpu().numpy()
+            elif hasattr(self.model, "q_net"):
+                # Standalone Q-net
+                q_values = self.model.q_net(obs_tensor)
+                probs = torch.softmax(q_values, dim=-1).squeeze(0).cpu().numpy()
+            else:
+                # Fallback: predict deterministic action
+                act, _ = self.model.predict(obs, deterministic=True)
+                probs = np.zeros(4, dtype=np.float32)
+                probs[int(act)] = 1.0
         return probs
 
 def compute_tvd(p: np.ndarray, q: np.ndarray) -> float:
     return 0.5 * np.sum(np.abs(p - q))
+
+def create_eval_env_from_dict(env_dict: Dict[str, Any]):
+    env_name = env_dict.get("env_name", "").lower()
+    if "coin" in env_name or "coin_reward" in env_dict or "coin_pos" in env_dict:
+        env_cfg = CoinCollectorConfig(**{k: v for k, v in env_dict.items() if k in CoinCollectorConfig.__annotations__})
+        return CoinCollectorEnv(env_cfg, expose_eval_info=True), env_cfg
+    elif "battery" in env_name or "battery_reward" in env_dict or "battery_pos" in env_dict:
+        env_cfg = BatteryCollectorConfig(**{k: v for k, v in env_dict.items() if k in BatteryCollectorConfig.__annotations__})
+        return BatteryCollectorEnv(env_cfg, expose_eval_info=True), env_cfg
+    else:
+        env_cfg = RegionToggleConfig(**{k: v for k, v in env_dict.items() if k in RegionToggleConfig.__annotations__})
+        return RegionToggleEnv(env_cfg, expose_eval_info=True), env_cfg
+
+def load_generator_model(ckpt_path: str, algo_name: str = "ppo"):
+    algo = algo_name.lower()
+    if "dqn" in algo:
+        return DQN.load(ckpt_path)
+    elif "a2c" in algo:
+        return A2C.load(ckpt_path)
+    else:
+        # Default try PPO, fallback to DQN / A2C
+        try:
+            return PPO.load(ckpt_path)
+        except Exception:
+            try:
+                return DQN.load(ckpt_path)
+            except Exception:
+                return A2C.load(ckpt_path)
 
 def extract_features_for_run(run_dir: str):
     features_dir = os.path.join(run_dir, "features")
@@ -42,7 +92,9 @@ def extract_features_for_run(run_dir: str):
 
     with open(os.path.join(run_dir, "config.json"), "r") as f:
         config_data = json.load(f)
-    env_cfg = RegionToggleConfig(**config_data["env"])
+    
+    eval_env, env_cfg = create_eval_env_from_dict(config_data["env"])
+    algo_name = config_data.get("algo", config_data.get("generator", {}).get("algo", "ppo"))
     
     probe_config = generate_probe_states(env_cfg)
     with open(os.path.join(features_dir, "probe_states.json"), "w") as f:
@@ -50,8 +102,6 @@ def extract_features_for_run(run_dir: str):
 
     ckpt_dir = os.path.join(run_dir, "checkpoints")
     checkpoints = sorted(glob.glob(os.path.join(ckpt_dir, "checkpoint_*.zip")))
-    
-    eval_env = RegionToggleEnv(env_cfg, expose_eval_info=True)
     
     schema = {
         "run_id": "string",
@@ -85,7 +135,7 @@ def extract_features_for_run(run_dir: str):
         step_str = ckpt_name.replace("checkpoint_", "").replace(".zip", "")
         step = int(step_str)
 
-        model = PPO.load(ckpt_path)
+        model = load_generator_model(ckpt_path, algo_name)
         adapter = PolicyAdapter(model)
 
         dists = []
@@ -130,7 +180,7 @@ def extract_features_for_run(run_dir: str):
                 action, _ = model.predict(obs, deterministic=True)
                 
                 e_info = info.get("eval", {})
-                pos = e_info.get("position", eval_env._pos)
+                pos = e_info.get("position", getattr(eval_env, "_pos", (0, 0)))
                 state_counts[pos[0], pos[1]] += 1
                 visited.add(pos)
                 trajectory.append(pos)
@@ -153,7 +203,9 @@ def extract_features_for_run(run_dir: str):
             e_info = info.get("eval", {})
             true_returns.append(e_info.get("true_return", 0.0))
             goal_successes.append(int(e_info.get("goal_reached", False)))
-            region_entries.append(e_info.get("region_entries", 0))
+            # Compatible across region_entries, coin_visits, and battery_visits
+            entries = e_info.get("region_entries", e_info.get("coin_visits", e_info.get("battery_visits", 0)))
+            region_entries.append(entries)
 
         mean_proxy = float(np.mean(returns_proxy))
         proxy_history.append(mean_proxy)

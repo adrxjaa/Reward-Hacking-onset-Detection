@@ -63,6 +63,15 @@ def run_detector():
     subprocess.check_call([sys.executable, os.path.join(scripts_dir, "plot_detector_results.py")])
 
 
+def run_multi_env():
+    print("=" * 60)
+    print("  Running Multi-Environment & Multi-Generator Pipeline")
+    print("  (CoinCollector, BatteryCollector, RegionToggle | PPO, A2C, DQN)")
+    print("=" * 60)
+    script = os.path.join(os.path.dirname(__file__), "scripts", "run_multi_env_experiments.py")
+    subprocess.check_call([sys.executable, script])
+
+
 def run_terminals(use_tmux=False):
     script = os.path.join(os.path.dirname(__file__), "scripts", "launch_3_terminals.py")
     cmd = [sys.executable, script]
@@ -78,7 +87,8 @@ def main():
     parser.add_argument("--pilot", action="store_true", help="Run RegionToggle pilot sweep")
     parser.add_argument("--onset", action="store_true", help="Run onset evaluation and plotting")
     parser.add_argument("--detector", action="store_true", help="Run LSTM-DQN detector pipeline")
-    parser.add_argument("--all", action="store_true", help="Run all baselines, pilots, onset, and detector")
+    parser.add_argument("--multi-env", "--generators", dest="multi_env", action="store_true", help="Run multi-environment (Coin, Battery, Region) and multi-generator (PPO, A2C, DQN) pipeline")
+    parser.add_argument("--all", action="store_true", help="Run all baselines, pilots, onset, detector, and multi-env")
     parser.add_argument("--terminals", "--parallel", dest="terminals", action="store_true", help="Pop up 3 separate terminal windows running all 3 environments")
     parser.add_argument("--tmux", action="store_true", help="Launch in a 3-way split tmux dashboard")
     args = parser.parse_args()
@@ -88,9 +98,9 @@ def main():
         return
 
     # If no flags passed, default to gridworld baseline for backwards-compatibility
-    if not (args.gridworld or args.battery or args.pilot or args.onset or args.detector or args.all):
+    if not (args.gridworld or args.battery or args.pilot or args.onset or args.detector or args.multi_env or args.all):
         print("No mode specified. Defaulting to GridWorld baseline (--gridworld).")
-        print("Pass --help to see available flags (--gridworld, --battery, --pilot, --onset, --detector, --terminals, --all).\n")
+        print("Pass --help to see available flags (--gridworld, --battery, --pilot, --onset, --detector, --multi-env, --terminals, --all).\n")
         run_gridworld()
         return
 
@@ -100,6 +110,7 @@ def main():
         run_pilot()
         run_onset()
         run_detector()
+        run_multi_env()
     else:
         if args.gridworld:
             run_gridworld()
@@ -111,6 +122,8 @@ def main():
             run_onset()
         if args.detector:
             run_detector()
+        if args.multi_env:
+            run_multi_env()
 
 
 if __name__ == "__main__":

@@ -1,0 +1,16 @@
+{
+  "run_id": "string",
+  "checkpoint_id": "integer",
+  "environment_steps": "integer",
+  "proxy_return": "float",
+  "proxy_return_smoothed": "float",
+  "proxy_return_change": "float",
+  "episode_length": "float",
+  "action_distribution_change": "float (Total Variation Distance)",
+  "state_visitation_entropy": "float",
+  "state_visitation_change": "float (Total Variation Distance)",
+  "path_efficiency": "float",
+  "revisit_rate": "float",
+  "behavioral_dispersion": "float",
+  "diagnostic_ppo_entropy": "float"
+}

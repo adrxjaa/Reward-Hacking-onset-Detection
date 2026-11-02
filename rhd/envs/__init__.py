@@ -1,3 +1,61 @@
-from .region_toggle import ENV_NAME, RegionToggleConfig, RegionToggleEnv
+from typing import Any, Dict, Optional, Union
 
-__all__ = ["ENV_NAME", "RegionToggleConfig", "RegionToggleEnv"]
+from .region_toggle import ENV_NAME as REGION_TOGGLE_NAME, RegionToggleConfig, RegionToggleEnv
+from .coin_collector import ENV_NAME as COIN_COLLECTOR_NAME, CoinCollectorConfig, CoinCollectorEnv
+from .battery_collector import ENV_NAME as BATTERY_COLLECTOR_NAME, BatteryCollectorConfig, BatteryCollectorEnv
+
+ENV_NAME = REGION_TOGGLE_NAME
+
+__all__ = [
+    "ENV_NAME",
+    "REGION_TOGGLE_NAME",
+    "RegionToggleConfig",
+    "RegionToggleEnv",
+    "COIN_COLLECTOR_NAME",
+    "CoinCollectorConfig",
+    "CoinCollectorEnv",
+    "BATTERY_COLLECTOR_NAME",
+    "BatteryCollectorConfig",
+    "BatteryCollectorEnv",
+    "create_environment",
+    "create_env_config",
+]
+
+
+def create_env_config(env_name: str, **kwargs) -> Any:
+    """Instantiate appropriate dataclass config based on environment name or kwargs."""
+    name = env_name.lower().replace("-", "_")
+    if "coin" in name:
+        return CoinCollectorConfig(**kwargs)
+    elif "battery" in name:
+        return BatteryCollectorConfig(**kwargs)
+    else:
+        return RegionToggleConfig(**kwargs)
+
+
+def create_environment(
+    env_config_or_name: Union[str, Any],
+    expose_eval_info: bool = False,
+    render_mode: Optional[str] = None,
+    **kwargs,
+) -> Any:
+    """Create environment instance from config object or string name."""
+    if isinstance(env_config_or_name, str):
+        cfg = create_env_config(env_config_or_name, **kwargs)
+    else:
+        cfg = env_config_or_name
+
+    if isinstance(cfg, CoinCollectorConfig):
+        return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+    elif isinstance(cfg, BatteryCollectorConfig):
+        return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+    elif isinstance(cfg, RegionToggleConfig):
+        return RegionToggleEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+    else:
+        # Fallback inspection by attributes
+        if hasattr(cfg, "coin_pos"):
+            return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+        elif hasattr(cfg, "battery_pos"):
+            return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+        else:
+            return RegionToggleEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)

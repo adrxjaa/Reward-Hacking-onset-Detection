@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reward-hacking-onset-detection"
+version = "0.1.0"
+description = "Detecting the Onset of Reward Hacking from RL Policy Behavior without True Reward Access"
+readme = "README.md"
+authors = [
+  { name = "Reinforcement Learning Alignment Team" }
+]
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "gymnasium>=0.29.1",
+    "stable-baselines3>=2.0.0",
+    "torch>=2.0.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "scipy>=1.10.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rhd*"]
