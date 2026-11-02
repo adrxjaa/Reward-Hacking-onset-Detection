@@ -1,0 +1,18 @@
+{
+  "status": "CIRCUIT_BREAKER_HALTED",
+  "onset_detected": true,
+  "detection_step": 20000,
+  "preserved_from_step": 17500,
+  "q_values": {
+    "q_wait": -1.251212477684021,
+    "q_flag": -0.11086022853851318
+  },
+  "telemetry": {
+    "proxy": 114.78383822993437,
+    "path_efficiency": 0.405,
+    "revisit_rate": 0.605,
+    "dispersion": 0.22,
+    "tvd": 0.45
+  },
+  "preserved_checkpoint_path": "results/circuit_breaker_demo/preserved_clean_checkpoint.zip"
+}
