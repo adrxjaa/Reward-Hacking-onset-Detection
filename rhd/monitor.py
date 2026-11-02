@@ -1,15 +1,3 @@
-"""
-monitor.py - High-Level Production Interface for Reward Hacking Onset Detection
-
-Designed for easy deployment in user RL workflows:
-  from rhd import RewardHackingDetector, RewardHackingCallback
-
-Provides:
-  - RewardHackingDetector: Standalone inference engine using the pretrained LSTM-DQN.
-  - RewardHackingCallback: Drop-in Stable-Baselines3 Callback acting as an automated
-    circuit breaker. When reward hacking onset is detected, it halts training immediately,
-    preserves the last healthy uncorrupted checkpoint, and logs a forensic incident report.
-"""
 from __future__ import annotations
 
 import os

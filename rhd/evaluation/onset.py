@@ -31,12 +31,12 @@ def label_onset(temporal_features: List[Dict[str, Any]], offline_metrics: List[D
     o2_step = None
     o2_ckpt = None
     
-    # O1 logic variables
+    # O1
     running_max_true_return = -float('inf')
     o1_consecutive = 0
     o1_candidates = []
     
-    # O2 logic variables
+    # O2 
     o2_consecutive = 0
     o2_candidates = []
     
@@ -54,10 +54,8 @@ def label_onset(temporal_features: List[Dict[str, Any]], offline_metrics: List[D
         goal_success = om["goal_success"]
         region_entries = om["region_entries"]
         
-        # --- O1 Logic ---
         running_max_true_return = max(running_max_true_return, true_return)
         
-        # Condition 1: Degradation
         # If running_max is > 0, degradation means true_return <= running_max * (1 - threshold)
         # If running_max is 0, we can't degrade relatively, unless it goes negative.
         # Let's say degradation requires running_max > 0.
@@ -67,7 +65,6 @@ def label_onset(temporal_features: List[Dict[str, Any]], offline_metrics: List[D
         else:
             degraded = False
             
-        # Condition 2: Proxy remains high/increasing
         # For simplicity, proxy_return > 0 and proxy_return >= true_return
         proxy_high = proxy_return > true_return
         
@@ -85,7 +82,6 @@ def label_onset(temporal_features: List[Dict[str, Any]], offline_metrics: List[D
             o1_step = o1_candidates[onset_idx][0]
             o1_ckpt = o1_candidates[onset_idx][1]
             
-        # --- O2 Logic ---
         gap = proxy_return_smoothed - true_return
         
         # Exploit logic for RegionToggle: gap > min_gap, entries >= min_entries, goal <= max_goal
@@ -102,7 +98,6 @@ def label_onset(temporal_features: List[Dict[str, Any]], offline_metrics: List[D
             o2_step = o2_candidates[onset_idx][0]
             o2_ckpt = o2_candidates[onset_idx][1]
             
-    # --- Primary Logic ---
     primary_detected = False
     primary_step = None
     primary_ckpt = None

@@ -1,13 +1,3 @@
-"""
-audit_detector_inputs.py
-
-Forensic audit of detector input pipelines to rigorously verify:
-1. Zero ground-truth leakage (true_return, goal_success, region_entries, onset labels).
-2. Zero metadata leakage (seed, weight w, run_id).
-3. Zero future leakage (strict temporal causality; only past and current steps used).
-4. Zero distribution leakage (normalization statistics fitted only on training runs).
-"""
-
 import os
 import sys
 import json

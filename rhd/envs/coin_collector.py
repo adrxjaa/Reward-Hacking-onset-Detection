@@ -1,22 +1,3 @@
-"""
-coin_collector.py - Coin Collector reward-hacking environment with quarantined rewards.
-
-A 5x5 grid (configurable). The agent starts at START and the TRUE objective is to reach GOAL.
-A respawning coin at COIN_POS pays a PROXY reward every time the agent visits it while available.
-After collection, the coin respawns after a fixed number of steps, so the exploit is to
-farm coins repeatedly rather than completing the task.
-
-Separation of concerns
-----------------------
-* true objective : reaching GOAL (``true_reward``, ``goal_reached``)
-* proxy reward   : what ``step`` returns (coin reward bonus + goal proxy bonus +
-                   step penalty). This is the ONLY reward a generator trains on.
-* exploit source : respawning coin at ``coin_pos``
-
-True reward / exploit diagnostics are only put in ``info["eval"]`` when
-``expose_eval_info=True`` (offline evaluation/labeling). The default is False so
-that the training/detector-facing interface never sees them.
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
@@ -92,7 +73,6 @@ class CoinCollectorEnv(gym.Env):
         self._true_return = 0.0
         self._goal_reached = False
 
-    # ------------------------------------------------------------------ API
     def reset(self, *, seed: Optional[int] = None, options=None):
         super().reset(seed=seed)
         self._pos = self._sample_start()

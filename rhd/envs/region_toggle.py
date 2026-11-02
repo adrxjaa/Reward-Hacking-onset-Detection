@@ -1,22 +1,3 @@
-"""
-region_toggle.py - Region-toggle reward-hacking environment.
-
-A small grid. The agent starts at START and the TRUE objective is to reach GOAL.
-A marked TARGET REGION pays a PROXY reward every time the agent *enters* it
-(outside -> inside transition). Stepping out and back in pays again, so the
-exploit is to oscillate across the region boundary instead of finishing.
-
-Separation of concerns
-----------------------
-* true objective : reaching GOAL (``true_reward``, ``goal_reached``)
-* proxy reward   : what ``step`` returns (region entry bonus + goal bonus +
-                   step penalty). This is the ONLY reward a generator trains on.
-* exploit region : ``RegionToggleConfig.region`` (inclusive rectangle)
-
-True reward / exploit diagnostics are only put in ``info["eval"]`` when
-``expose_eval_info=True`` (offline evaluation/labeling). The default is False so
-that the training/detector-facing interface never sees them.
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict

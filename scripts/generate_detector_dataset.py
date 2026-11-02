@@ -1,11 +1,3 @@
-"""
-generate_detector_dataset.py
-
-Generates a multi-seed dataset of generator runs across clean and exploit regimes,
-extracts non-leaking behavioral features, computes mathematical onsets,
-and creates strict run-level train/validation/test splits with normalization stats.
-"""
-
 import os
 import sys
 import json

@@ -1,8 +1,3 @@
-"""
-combine_metrics.py
-Combine GridWorld and Battery Collector evaluation datasets into a unified CSV.
-"""
-
 import json
 import os
 import csv

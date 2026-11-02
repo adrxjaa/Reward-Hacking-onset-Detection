@@ -8,7 +8,6 @@ from stable_baselines3 import PPO
 
 def js_divergence(p: np.ndarray, q: np.ndarray) -> float:
     # Jensen-Shannon divergence
-    # Ensure they sum to 1 and have no negatives
     p = np.clip(p, 1e-10, 1.0)
     q = np.clip(q, 1e-10, 1.0)
     p = p / np.sum(p)

@@ -29,7 +29,6 @@ def generate_probe_states(env_cfg: Any) -> ProbeStateConfig:
     if hasattr(env_cfg, "size"):
         states = [(r, c) for r in range(env_cfg.size) for c in range(env_cfg.size)]
     else:
-        # 5x5 normalized probe grid for continuous vehicle track
         states = [(r, c) for r in range(5) for c in range(5)]
     return ProbeStateConfig(states=states)
 
@@ -54,7 +53,6 @@ class PolicyAdapter:
                 q_values = self.model.q_net(obs_tensor)
                 probs = torch.softmax(q_values, dim=-1).squeeze(0).cpu().numpy()
             else:
-                # Fallback: predict deterministic action
                 act, _ = self.model.predict(obs, deterministic=True)
                 probs = np.zeros(5, dtype=np.float32)
                 probs[int(act)] = 1.0
@@ -88,7 +86,6 @@ def load_generator_model(ckpt_path: str, algo_name: str = "ppo"):
     elif "a2c" in algo:
         return A2C.load(ckpt_path)
     else:
-        # Default try PPO, fallback to DQN / A2C
         try:
             return PPO.load(ckpt_path)
         except Exception:
@@ -154,8 +151,7 @@ def extract_features_for_run(run_dir: str):
             if hasattr(env_cfg, "size"):
                 d = max(env_cfg.size - 1, 1)
                 obs = np.array([r / d, c / d], dtype=np.float32)
-            else:
-                # Continuous car: [x_norm, y_norm, v_norm, heading_norm]
+            else: # car thingy
                 obs = np.array([c / 4.0, r / 4.0, 0.5, 0.5], dtype=np.float32)
             dist = adapter.get_action_distribution(obs)
             dists.append(dist)
@@ -221,7 +217,7 @@ def extract_features_for_run(run_dir: str):
             e_info = info.get("eval", {})
             true_returns.append(e_info.get("true_return", 0.0))
             goal_successes.append(int(e_info.get("goal_reached", False)))
-            # Compatible across region_entries, coin_visits, battery_visits, circle_count, and suck_count
+
             entries = e_info.get("region_entries", e_info.get("coin_visits", e_info.get("battery_visits", e_info.get("circle_count", e_info.get("suck_count", 0)))))
             region_entries.append(entries)
 

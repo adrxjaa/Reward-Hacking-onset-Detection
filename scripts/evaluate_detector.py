@@ -1,10 +1,3 @@
-"""
-evaluate_detector.py
-
-Evaluates the trained LSTM-DQN detector against mathematical O1 and O2 detectors
-on held-out test runs. Generates comparison tables and metrics CSV files.
-"""
-
 import os
 import sys
 import json

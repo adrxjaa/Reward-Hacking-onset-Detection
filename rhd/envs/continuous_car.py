@@ -1,21 +1,3 @@
-"""
-continuous_car.py - 2D Continuous Kinematic Car reward-hacking environment with quarantined rewards.
-
-Simulates a self-driving vehicle with continuous bicycle kinematics on a 2D track.
-The true objective is to drive from the starting pose to a destination waypoint.
-A flawed proxy reward incentivizes vehicle speed (v) and staying on the road.
-
-Flawed Reward Loophole:
-- If speed reward weight (w_speed) > 0, the vehicle discovers it can accumulate massive rewards
-  by continuously driving in high-speed donuts/circles inside an open asphalt area, earning
-  continuous speed rewards while abandoning the destination waypoint completely.
-- In clean control (w_speed = 0), the vehicle learns to steer directly to the destination.
-
-Strict Reward Quarantine:
-- Proxy reward is returned by step() for generator training.
-- True goal reward, goal success flag, and off-road penalty are strictly isolated in info["eval"]
-  only when expose_eval_info=True.
-"""
 from __future__ import annotations
 
 import math
