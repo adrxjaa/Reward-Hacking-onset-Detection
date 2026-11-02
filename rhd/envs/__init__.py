@@ -4,6 +4,7 @@ from .region_toggle import ENV_NAME as REGION_TOGGLE_NAME, RegionToggleConfig, R
 from .coin_collector import ENV_NAME as COIN_COLLECTOR_NAME, CoinCollectorConfig, CoinCollectorEnv
 from .battery_collector import ENV_NAME as BATTERY_COLLECTOR_NAME, BatteryCollectorConfig, BatteryCollectorEnv
 from .continuous_car import ENV_NAME as CONTINUOUS_CAR_NAME, ContinuousCarConfig, ContinuousCarEnv
+from .vacuum_cleaner import ENV_NAME as VACUUM_CLEANER_NAME, VacuumCleanerConfig, VacuumCleanerEnv
 
 ENV_NAME = REGION_TOGGLE_NAME
 
@@ -21,6 +22,9 @@ __all__ = [
     "CONTINUOUS_CAR_NAME",
     "ContinuousCarConfig",
     "ContinuousCarEnv",
+    "VACUUM_CLEANER_NAME",
+    "VacuumCleanerConfig",
+    "VacuumCleanerEnv",
     "create_environment",
     "create_env_config",
 ]
@@ -33,6 +37,8 @@ def create_env_config(env_name: str, **kwargs) -> Any:
         return CoinCollectorConfig(**kwargs)
     elif "battery" in name:
         return BatteryCollectorConfig(**kwargs)
+    elif "vacuum" in name or "cleaner" in name:
+        return VacuumCleanerConfig(**kwargs)
     elif "car" in name or "driving" in name or "vehicle" in name:
         return ContinuousCarConfig(**kwargs)
     else:
@@ -55,6 +61,8 @@ def create_environment(
         return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     elif isinstance(cfg, BatteryCollectorConfig):
         return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+    elif isinstance(cfg, VacuumCleanerConfig):
+        return VacuumCleanerEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     elif isinstance(cfg, ContinuousCarConfig):
         return ContinuousCarEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     elif isinstance(cfg, RegionToggleConfig):
@@ -65,6 +73,8 @@ def create_environment(
             return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
         elif hasattr(cfg, "battery_pos"):
             return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+        elif hasattr(cfg, "initial_dirt_positions"):
+            return VacuumCleanerEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
         elif hasattr(cfg, "track_length") or hasattr(cfg, "speed_reward_weight"):
             return ContinuousCarEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
         else:

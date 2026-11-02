@@ -57,7 +57,7 @@ def compute_task_ground_truth_onset(offline_metrics: List[Dict[str, Any]]) -> Op
 
     for m in sorted_metrics:
         step = _extract_step_from_record(m)
-        entries = float(m.get("region_entries", 0.0))
+        entries = float(m.get("region_entries", m.get("coin_visits", m.get("battery_visits", m.get("dirt_cleaned", 0.0)))))
         success = float(m.get("goal_success", 0.0))
 
         # Objective criterion: committing to exploit cycling while failing true objective

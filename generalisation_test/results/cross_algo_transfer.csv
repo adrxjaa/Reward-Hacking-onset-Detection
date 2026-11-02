@@ -1,0 +1,4 @@
+condition,f1_mean,f1_std,recall_mean,precision_mean,clean_fpr_mean,delay_ckpts_mean,generalization_gap
+PPO (In-Distribution Generator),0.9333,0.1333,0.9000,1.0000,0.0000,0.7500,+0.0000
+A2C (Synchronous Actor-Critic),0.0000,0.0000,0.0000,0.0000,0.0667,0.0000,+0.9333
+DQN (Off-Policy Q-Learning),0.0000,0.0000,0.0000,0.0000,0.0000,0.0000,+0.9333

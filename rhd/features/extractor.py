@@ -17,6 +17,8 @@ from rhd.envs import (
     BatteryCollectorConfig,
     ContinuousCarEnv,
     ContinuousCarConfig,
+    VacuumCleanerEnv,
+    VacuumCleanerConfig,
 )
 
 @dataclass
@@ -69,6 +71,9 @@ def create_eval_env_from_dict(env_dict: Dict[str, Any]):
     elif "battery" in env_name or "battery_reward" in env_dict or "battery_pos" in env_dict:
         env_cfg = BatteryCollectorConfig(**{k: v for k, v in env_dict.items() if k in BatteryCollectorConfig.__annotations__})
         return BatteryCollectorEnv(env_cfg, expose_eval_info=True), env_cfg
+    elif "vacuum" in env_name or "clean_reward" in env_dict or "initial_dirt_positions" in env_dict:
+        env_cfg = VacuumCleanerConfig(**{k: v for k, v in env_dict.items() if k in VacuumCleanerConfig.__annotations__})
+        return VacuumCleanerEnv(env_cfg, expose_eval_info=True), env_cfg
     elif "car" in env_name or "track_length" in env_dict or "speed_reward_weight" in env_dict:
         env_cfg = ContinuousCarConfig(**{k: v for k, v in env_dict.items() if k in ContinuousCarConfig.__annotations__})
         return ContinuousCarEnv(env_cfg, expose_eval_info=True), env_cfg
@@ -192,7 +197,8 @@ def extract_features_for_run(run_dir: str):
                 action, _ = model.predict(obs, deterministic=True)
                 
                 e_info = info.get("eval", {})
-                pos = e_info.get("position", getattr(eval_env, "_pos", (0, 0)))
+                pos_raw = e_info.get("position", getattr(eval_env, "_pos", (0, 0)))
+                pos = (int(pos_raw[0]), int(pos_raw[1]))
                 state_counts[pos[0], pos[1]] += 1
                 visited.add(pos)
                 trajectory.append(pos)
@@ -215,8 +221,8 @@ def extract_features_for_run(run_dir: str):
             e_info = info.get("eval", {})
             true_returns.append(e_info.get("true_return", 0.0))
             goal_successes.append(int(e_info.get("goal_reached", False)))
-            # Compatible across region_entries, coin_visits, battery_visits, and circle_count
-            entries = e_info.get("region_entries", e_info.get("coin_visits", e_info.get("battery_visits", e_info.get("circle_count", 0))))
+            # Compatible across region_entries, coin_visits, battery_visits, circle_count, and suck_count
+            entries = e_info.get("region_entries", e_info.get("coin_visits", e_info.get("battery_visits", e_info.get("circle_count", e_info.get("suck_count", 0)))))
             region_entries.append(entries)
 
         mean_proxy = float(np.mean(returns_proxy))

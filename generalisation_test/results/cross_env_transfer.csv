@@ -1,0 +1,5 @@
+condition,f1_mean,f1_std,recall_mean,precision_mean,clean_fpr_mean,delay_ckpts_mean,generalization_gap
+RegionToggle (In-Distribution Train),0.9333,0.1333,0.9000,1.0000,0.0000,0.5000,+0.0000
+CoinCollector (Unseen Layout + Coin),1.0000,0.0000,1.0000,1.0000,0.0000,1.0000,-0.0667
+BatteryCollector (Unseen Energy Pad),0.8000,0.1633,0.7000,1.0000,0.0000,0.9000,+0.1333
+VacuumCleaner (Unseen Room + Dirt),1.0000,0.0000,1.0000,1.0000,0.0000,0.6000,-0.0667
