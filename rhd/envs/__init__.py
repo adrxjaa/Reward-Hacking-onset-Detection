@@ -5,6 +5,7 @@ from .coin_collector import ENV_NAME as COIN_COLLECTOR_NAME, CoinCollectorConfig
 from .battery_collector import ENV_NAME as BATTERY_COLLECTOR_NAME, BatteryCollectorConfig, BatteryCollectorEnv
 from .continuous_car import ENV_NAME as CONTINUOUS_CAR_NAME, ContinuousCarConfig, ContinuousCarEnv
 from .vacuum_cleaner import ENV_NAME as VACUUM_CLEANER_NAME, VacuumCleanerConfig, VacuumCleanerEnv
+from .adas_highway import ENV_NAME as HIGHWAY_ADAS_NAME, HighwayADASConfig, HighwayADASEnv
 
 ENV_NAME = REGION_TOGGLE_NAME
 
@@ -25,6 +26,9 @@ __all__ = [
     "VACUUM_CLEANER_NAME",
     "VacuumCleanerConfig",
     "VacuumCleanerEnv",
+    "HIGHWAY_ADAS_NAME",
+    "HighwayADASConfig",
+    "HighwayADASEnv",
     "create_environment",
     "create_env_config",
 ]
@@ -33,7 +37,9 @@ __all__ = [
 def create_env_config(env_name: str, **kwargs) -> Any:
     """Instantiate appropriate dataclass config based on environment name or kwargs."""
     name = env_name.lower().replace("-", "_")
-    if "coin" in name:
+    if "adas" in name or "highway" in name:
+        return HighwayADASConfig(**kwargs)
+    elif "coin" in name:
         return CoinCollectorConfig(**kwargs)
     elif "battery" in name:
         return BatteryCollectorConfig(**kwargs)
@@ -57,7 +63,9 @@ def create_environment(
     else:
         cfg = env_config_or_name
 
-    if isinstance(cfg, CoinCollectorConfig):
+    if isinstance(cfg, HighwayADASConfig):
+        return HighwayADASEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+    elif isinstance(cfg, CoinCollectorConfig):
         return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     elif isinstance(cfg, BatteryCollectorConfig):
         return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
@@ -69,7 +77,9 @@ def create_environment(
         return RegionToggleEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     else:
         # Fallback inspection by attributes
-        if hasattr(cfg, "coin_pos"):
+        if hasattr(cfg, "save_reward_weight"):
+            return HighwayADASEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+        elif hasattr(cfg, "coin_pos"):
             return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
         elif hasattr(cfg, "battery_pos"):
             return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
