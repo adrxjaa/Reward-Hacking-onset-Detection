@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional, Union
 from .region_toggle import ENV_NAME as REGION_TOGGLE_NAME, RegionToggleConfig, RegionToggleEnv
 from .coin_collector import ENV_NAME as COIN_COLLECTOR_NAME, CoinCollectorConfig, CoinCollectorEnv
 from .battery_collector import ENV_NAME as BATTERY_COLLECTOR_NAME, BatteryCollectorConfig, BatteryCollectorEnv
+from .continuous_car import ENV_NAME as CONTINUOUS_CAR_NAME, ContinuousCarConfig, ContinuousCarEnv
 
 ENV_NAME = REGION_TOGGLE_NAME
 
@@ -17,6 +18,9 @@ __all__ = [
     "BATTERY_COLLECTOR_NAME",
     "BatteryCollectorConfig",
     "BatteryCollectorEnv",
+    "CONTINUOUS_CAR_NAME",
+    "ContinuousCarConfig",
+    "ContinuousCarEnv",
     "create_environment",
     "create_env_config",
 ]
@@ -29,6 +33,8 @@ def create_env_config(env_name: str, **kwargs) -> Any:
         return CoinCollectorConfig(**kwargs)
     elif "battery" in name:
         return BatteryCollectorConfig(**kwargs)
+    elif "car" in name or "driving" in name or "vehicle" in name:
+        return ContinuousCarConfig(**kwargs)
     else:
         return RegionToggleConfig(**kwargs)
 
@@ -49,6 +55,8 @@ def create_environment(
         return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     elif isinstance(cfg, BatteryCollectorConfig):
         return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+    elif isinstance(cfg, ContinuousCarConfig):
+        return ContinuousCarEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     elif isinstance(cfg, RegionToggleConfig):
         return RegionToggleEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
     else:
@@ -57,5 +65,7 @@ def create_environment(
             return CoinCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
         elif hasattr(cfg, "battery_pos"):
             return BatteryCollectorEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
+        elif hasattr(cfg, "track_length") or hasattr(cfg, "speed_reward_weight"):
+            return ContinuousCarEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
         else:
             return RegionToggleEnv(cfg, expose_eval_info=expose_eval_info, render_mode=render_mode)
