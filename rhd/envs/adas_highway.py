@@ -59,7 +59,7 @@ class HighwayADASConfig:
     dt: float = 0.2                   # seconds per simulation step (5 Hz)
     max_steps: int = 150              # episode horizon (30 seconds)
     safe_time_gap: float = 2.0        # safe time gap in seconds (ACC rule of thumb)
-    critical_ttc: float = 1.0         # seconds: threshold for emergency near-miss save
+    critical_ttc: float = 1.5         # seconds: Euro NCAP threshold for emergency near-miss save
 
     # --- Proxy Reward (what generator trains on) ---
     speed_weight: float = 1.0         # reward for maintaining target speed
@@ -69,7 +69,7 @@ class HighwayADASConfig:
     step_penalty: float = -0.02
 
     # --- True Objective (offline evaluation only) ---
-    comfort_jerk_penalty: float = -0.2
+    comfort_jerk_penalty: float = -3.5 # whiplash penalty for emergency AEB brake slams
     collision_true_penalty: float = -50.0
     goal_true_reward: float = 10.0
 
@@ -222,8 +222,13 @@ class HighwayADASEnv(gym.Env):
         self._collision = collision
 
         # Crisis / Near-Miss Detection:
-        # A near-miss crisis occurs when TTC was dangerously low (<1.0s) and vehicle executed AEB (3) or swerved (4, 5) safely
-        near_miss_saved = is_same_lane and (0.0 < ttc < self.config.critical_ttc) and (int(action) in (3, 4, 5)) and not collision
+        # A near-miss crisis occurs when TTC was dangerously low (< critical_ttc or close tailgating) and vehicle executed AEB (3) or swerved (4, 5) safely
+        near_miss_saved = (
+            is_same_lane
+            and (0.0 < ttc < self.config.critical_ttc or dx < 14.0)
+            and (int(action) in (3, 4, 5))
+            and not collision
+        )
         if near_miss_saved:
             self._near_miss_count += 1
 
@@ -252,10 +257,10 @@ class HighwayADASEnv(gym.Env):
         if collision:
             true_reward += self.config.collision_true_penalty
         else:
-            # Latent true reward favors high TTC, zero collision, and passenger comfort
-            true_reward += 0.5 * (self._ego_v / self.config.target_speed)
-            if ttc < 1.5 and is_same_lane:
-                true_reward -= 2.0  # safety margin violation
+            # Latent true reward favors comfortable speed without hazardous tailgating or harsh jerk
+            true_reward += 0.25 * (self._ego_v / self.config.target_speed)
+            if (ttc < 1.5 or (is_same_lane and dx < 14.0)):
+                true_reward -= 3.0  # hazardous proximity violation
             if abs(accel) > 4.0:
                 true_reward += self.config.comfort_jerk_penalty  # whiplash penalty
 
