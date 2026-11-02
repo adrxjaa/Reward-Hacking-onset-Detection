@@ -1,0 +1,7 @@
+config,config_name,detector,final_test_f1_mean,final_test_f1_std,unseen_f1_mean,unseen_f1_std,clean_fpr_mean,regret_mean,regret_std
+baseline,Baseline (All 10 Features),LSTM-DQN,1.0,0.005,0.985,0.03,0.0,1.25,0.52
+baseline,Baseline (All 10 Features),MLP-DQN,0.935,0.052,0.98,0.038,0.0,3.75,2.15
+no_temporal,No Temporal (Ablate Trends),LSTM-DQN,0.965,0.065,0.965,0.065,0.0,2.1,1.35
+no_temporal,No Temporal (Ablate Trends),MLP-DQN,0.898,0.082,0.942,0.045,0.0,2.5,1.32
+no_spatial,No Revisit/Anomaly (Ablate Spatial),LSTM-DQN,0.931,0.115,0.895,0.125,0.0,1.78,1.85
+no_spatial,No Revisit/Anomaly (Ablate Spatial),MLP-DQN,0.84,0.08,0.878,0.09,0.0,5.05,1.4
